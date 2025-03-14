@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from "react-native";
 import AxiosInstance from "../axios/config";
 import { Card, DataTable } from "react-native-paper";
+import Protected from "../common/Protected";
+import { AuthContext } from "../context/AuthContext";
+import axios from "axios";
 
-const MenuPage = () => {
-  const userId = "676c0798dab7f6af1408bb49";
-
+const MenuPage = ({navigation}) => {
+  const {user} = useContext(AuthContext);
   const [menuData, setMenuData] = useState([]);
   const [mealData, setMealData] = useState([]);
   const [loadingMenu, setLoadingMenu] = useState(false);
@@ -17,7 +19,8 @@ const MenuPage = () => {
   const fetchMenuData = async () => {
     setLoadingMenu(true);
     try {
-      const response = await AxiosInstance.get("/days/getMenu/");
+      const response = await AxiosInstance.get("/days/getMenu");
+      console.log(response)
       setMenuData(response.data);
     } catch (error) {
       console.log("Error fetching menu data", error);
@@ -52,55 +55,57 @@ const MenuPage = () => {
   );
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {loadingMeal || loadingMenu ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <>
-          {/* Meal Cards */}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mealScroll}>
-            {mealData.map((item, index) => {
-              const startTime = new Date(item.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-              const endTime = new Date(item.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-              return (
-                <Card key={index} style={styles.mealCard}>
-                  <Card.Content>
-                    <Text style={styles.mealTitle}>{item.mealName}</Text>
-                    <Text style={styles.mealTime}>{startTime} - {endTime}</Text>
-                    <Text style={styles.mealCost}>Cost: ₹{item.cost}</Text>
-                  </Card.Content>
-                </Card>
-              );
-            })}
-          </ScrollView>
+    <Protected navigation={navigation}>
+      <ScrollView contentContainerStyle={styles.container}>
+        {loadingMeal || loadingMenu ? (
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : (
+          <>
+            {/* Meal Cards */}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mealScroll}>
+              {mealData.map((item, index) => {
+                const startTime = new Date(item.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const endTime = new Date(item.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                return (
+                  <Card key={index} style={styles.mealCard}>
+                    <Card.Content>
+                      <Text style={styles.mealTitle}>{item.mealName}</Text>
+                      <Text style={styles.mealTime}>{startTime} - {endTime}</Text>
+                      <Text style={styles.mealCost}>Cost: ₹{item.cost}</Text>
+                    </Card.Content>
+                  </Card>
+                );
+              })}
+            </ScrollView>
 
-          {/* Menu Table */}
-          <DataTable style={styles.tableContainer}>
-            <DataTable.Header style={styles.tableHeader}>
-              <DataTable.Title>Day</DataTable.Title>
-              <DataTable.Title>Breakfast</DataTable.Title>
-              <DataTable.Title>Lunch</DataTable.Title>
-              <DataTable.Title>Dinner</DataTable.Title>
-            </DataTable.Header>
+            {/* Menu Table */}
+            <DataTable style={styles.tableContainer}>
+              <DataTable.Header style={styles.tableHeader}>
+                <DataTable.Title>Day</DataTable.Title>
+                <DataTable.Title>Breakfast</DataTable.Title>
+                <DataTable.Title>Lunch</DataTable.Title>
+                <DataTable.Title>Dinner</DataTable.Title>
+              </DataTable.Header>
 
-            {paginatedMenuData.length > 0 ? (
-              paginatedMenuData.map((item, index) => (
-                <DataTable.Row key={index}>
-                  <DataTable.Cell>{item.day}</DataTable.Cell>
-                  <DataTable.Cell>{item.breakfast}</DataTable.Cell>
-                  <DataTable.Cell>{item.lunch}</DataTable.Cell>
-                  <DataTable.Cell>{item.dinner}</DataTable.Cell>
+              {paginatedMenuData.length > 0 ? (
+                paginatedMenuData.map((item, index) => (
+                  <DataTable.Row key={index}>
+                    <DataTable.Cell>{item.day}</DataTable.Cell>
+                    <DataTable.Cell>{item.breakfast}</DataTable.Cell>
+                    <DataTable.Cell>{item.lunch}</DataTable.Cell>
+                    <DataTable.Cell>{item.dinner}</DataTable.Cell>
+                  </DataTable.Row>
+                ))
+              ) : (
+                <DataTable.Row>
+                  <DataTable.Cell>No meals available</DataTable.Cell>
                 </DataTable.Row>
-              ))
-            ) : (
-              <DataTable.Row>
-                <DataTable.Cell>No meals available</DataTable.Cell>
-              </DataTable.Row>
-            )}
-          </DataTable>
-        </>
-      )}
-    </ScrollView>
+              )}
+            </DataTable>
+          </>
+        )}
+      </ScrollView>
+    </Protected>
   );
 };
 

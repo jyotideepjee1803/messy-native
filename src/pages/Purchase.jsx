@@ -1,12 +1,17 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useContext } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView, TouchableHighlight } from "react-native";
 import AxiosInstance from "../axios/config";
 import RazorpayCheckout from "react-native-razorpay";
+import { AuthContext } from "../context/AuthContext";
+import Protected from "../common/Protected";
+import axios from "axios";
 
-const Purchase = () => {
-  const userId = "676c0798dab7f6af1408bb49";
-
+const Purchase = ({navigation}) => {
+  const {user} = useContext(AuthContext);
+  const userId = user.userId;
+  const [coupon, setCoupon] = useState([]);
   const [menuData, setMenuData] = useState([]);
+  const [loadingCoupon, setLoadingCoupon] = useState(false);
   const [loadingMenu, setLoadingMenu] = useState(false);
   const [selectedItems, setSelectedItems] = useState(
     Array(3).fill(Array(7).fill(false))
@@ -17,10 +22,26 @@ const Purchase = () => {
   const sortIdx = useMemo(() => ({ Monday: 0, Tuesday: 1, Wednesday: 2, Thursday: 3, Friday: 4, Saturday: 5, Sunday: 6 }), []);
   const mp = useMemo(() => ({ breakfast: 0, lunch: 1, dinner: 2 }), []);
 
+  var date = new Date();
+  var currentDateTime = date.toISOString(); 
+
+  const getDayDifference = useCallback((dateString1, dateString2) => {
+      const date1 = new Date(dateString1);
+      const date2 = new Date(dateString2);
+      const timeDifference = Math.abs(date2.getTime() - date1.getTime());
+      return Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+  }, []);
+  
   const fetchMenuData = async () => {
     try {
       setLoadingMenu(true);
-      const response = await AxiosInstance.get("/days/getMenu/");
+      const response = await AxiosInstance.get("days/getMenu");
+      // await axios.get("http://192.168.1.67:5000/days/getMenu", {
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     Authorization: `Bearer ${user.token}`,
+      //   },
+      // });
       let data = response.data;
       data.sort((a, b) => sortIdx[a.day] - sortIdx[b.day]);
       setMenuData(data);
@@ -34,6 +55,13 @@ const Purchase = () => {
   const fetchMealCosts = useCallback(async () => {
     try {
       const response = await AxiosInstance.get("/meals/getMeals");
+      // await axios.get("http://192.168.1.67:5000/meals/getMeals", {
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     Authorization: `Bearer ${user.token}`,
+      //   },
+      // });
+
       const breakfastCost = response.data.find((meal) => meal.mealName === "breakfast").cost;
       const lunchCost = response.data.find((meal) => meal.mealName === "lunch").cost;
       const dinnerCost = response.data.find((meal) => meal.mealName === "dinner").cost;
@@ -43,9 +71,24 @@ const Purchase = () => {
     }
   }, []);
 
+  const fetchCouponData = async() => {
+    try{
+      setLoadingCoupon(true);
+      const response = await AxiosInstance.get(`/coupons?userId=${userId}`);
+      console.log(response.data.coupons[0]);
+      setCoupon(response.data.coupons[0]);
+    }catch(error){
+      console.error("Error fetching coupon data:", error)
+    }
+    finally{
+      setLoadingCoupon(false);
+    }
+  }
+
   useEffect(() => {
     fetchMenuData();
     fetchMealCosts();
+    fetchCouponData();
   }, []);
 
   const handleCheckboxChange = (mealIndex, dayIndex) => {
@@ -72,7 +115,13 @@ const Purchase = () => {
   }, [selectedItems, mealCost]);
 
   const paymentStatus = async(data)=>{
-    const resp = await AxiosInstance.post(`/payments?userId=${userId}`, data);
+    const resp = await AxiosInstance.post(`payments?userId=${userId}`, data);
+    // await axios.post(`http://192.168.1.67:5000/payments?userId=${userId}`, data, {
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: `Bearer ${user.token}`,
+    //   },
+    //   });
       if (resp.data) {
           Alert.alert('Success', 'Coupon Bought Successfully');
       } else {
@@ -82,7 +131,12 @@ const Purchase = () => {
 
   const initiatePayment = async () => {
     try {
-      const res = await AxiosInstance.post("/payments/initiate", {userId, amount: total, selected: selectedItems });
+      const res = await AxiosInstance.post("payments/initiate", {userId, amount: total, selected: selectedItems });
+      // await axios.post("http://192.168.1.67:5000/payments/initiate", {userId, amount: total, selected: selectedItems }, { 
+      //   headers: {
+      //   "Content-Type": "application/json",
+      //   Authorization: `Bearer ${user.token}`,
+      // }});
       console.log(res)
       const options = {
         description: 'Coupon Purchase',
@@ -112,81 +166,88 @@ const Purchase = () => {
     }
   };
 
-  return loadingMenu ? (
-    <ActivityIndicator size="large" color="#0000ff" style={{ flex: 1, justifyContent: "center" }} />
-  ) : (
-    <ScrollView contentContainerStyle={{ padding: 20 }}>
-      <View style={{ backgroundColor: "white", padding: 10, borderRadius: 10, elevation: 3 }}>
-        <Text style={{ fontSize: 18, fontWeight: "bold", textAlign: "center", marginBottom: 10 }}>Meal Plan</Text>
-        <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 5 }}>
-          <Text style={{ flex: 1, fontWeight: "bold" }}>Day</Text>
-          <Text style={{ flex: 1, fontWeight: "bold" }}>Breakfast</Text>
-          <Text style={{ flex: 1, fontWeight: "bold" }}>Lunch</Text>
-          <Text style={{ flex: 1, fontWeight: "bold" }}>Dinner</Text>
-        </View>
-        {menuData.map((rowData, index) => (
-          <View key={index} style={{ flexDirection: "row", justifyContent: "space-between", marginVertical: 5 }}>
-            <Text style={{ flex: 1 }}>{rowData.day}</Text>
-            {/* Breakfast Cell */}
-            <TouchableOpacity
+  return (
+    <Protected navigation={navigation}>
+      {loadingMenu || loadingCoupon ? (
+        <ActivityIndicator size="large" color="#0000ff" style={{ flex: 1, justifyContent: "center" }} />
+      ) : (!coupon || ((coupon.taken===true && getDayDifference(currentDateTime, coupon.updatedAt) >=5) || coupon.taken===false) ? (
+          <ScrollView contentContainerStyle={{ padding: 20 }}>
+          <View style={{ backgroundColor: "white", padding: 10, borderRadius: 10, elevation: 3 }}>
+            <Text style={{ fontSize: 18, fontWeight: "bold", textAlign: "center", marginBottom: 10 }}>Meal Plan</Text>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 5 }}>
+              <Text style={{ flex: 1, fontWeight: "bold" }}>Day</Text>
+              <Text style={{ flex: 1, fontWeight: "bold" }}>Breakfast</Text>
+              <Text style={{ flex: 1, fontWeight: "bold" }}>Lunch</Text>
+              <Text style={{ flex: 1, fontWeight: "bold" }}>Dinner</Text>
+            </View>
+            {menuData.map((rowData, index) => (
+              <View key={index} style={{ flexDirection: "row", justifyContent: "space-between", marginVertical: 5 }}>
+                <Text style={{ flex: 1 }}>{rowData.day}</Text>
+                {/* Breakfast Cell */}
+                <TouchableOpacity
+                  style={{
+                    flex: 1,
+                    backgroundColor: selectedItems[0][index] ? "#ceface" : "white",
+                    padding: 5,
+                    borderRadius: 5,
+                    borderWidth: 1,
+                    borderColor: "#ccc",
+                  }}
+                  onPress={() => handleCheckboxChange(0, index)}
+                >
+                  <Text style={{ textAlign: "center" }}>{rowData.breakfast}</Text>
+                </TouchableOpacity>
+                {/* Lunch Cell */}
+                <TouchableOpacity
+                  style={{
+                    flex: 1,
+                    backgroundColor: selectedItems[1][index] ? "#ceface" : "white",
+                    padding: 5,
+                    borderRadius: 5,
+                    borderWidth: 1,
+                    borderColor: "#ccc",
+                  }}
+                  onPress={() => handleCheckboxChange(1, index)}
+                >
+                  <Text style={{ textAlign: "center" }}>{rowData.lunch}</Text>
+                </TouchableOpacity>
+                {/* Dinner Cell */}
+                <TouchableOpacity
+                  style={{
+                    flex: 1,
+                    backgroundColor: selectedItems[2][index] ? "#ceface" : "white",
+                    padding: 5,
+                    borderRadius: 5,
+                    borderWidth: 1,
+                    borderColor: "#ccc",
+                  }}
+                  onPress={() => handleCheckboxChange(2, index)}
+                >
+                  <Text style={{ textAlign: "center" }}>{rowData.dinner}</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+            <Text style={{ fontSize: 16, fontWeight: "bold", textAlign: "right", marginTop: 10 }}>{`Total: ₹${total}`}</Text>
+            <TouchableHighlight
               style={{
-                flex: 1,
-                backgroundColor: selectedItems[0][index] ? "#ceface" : "white",
-                padding: 5,
+                backgroundColor: total === 0 ? "gray" : "#f37251",
+                padding: 10,
                 borderRadius: 5,
-                borderWidth: 1,
-                borderColor: "#ccc",
+                marginTop: 10,
+                alignItems: "center",
               }}
-              onPress={() => handleCheckboxChange(0, index)}
+              disabled={total === 0}
+              onPress={initiatePayment}
             >
-              <Text style={{ textAlign: "center" }}>{rowData.breakfast}</Text>
-            </TouchableOpacity>
-            {/* Lunch Cell */}
-            <TouchableOpacity
-              style={{
-                flex: 1,
-                backgroundColor: selectedItems[1][index] ? "#ceface" : "white",
-                padding: 5,
-                borderRadius: 5,
-                borderWidth: 1,
-                borderColor: "#ccc",
-              }}
-              onPress={() => handleCheckboxChange(1, index)}
-            >
-              <Text style={{ textAlign: "center" }}>{rowData.lunch}</Text>
-            </TouchableOpacity>
-            {/* Dinner Cell */}
-            <TouchableOpacity
-              style={{
-                flex: 1,
-                backgroundColor: selectedItems[2][index] ? "#ceface" : "white",
-                padding: 5,
-                borderRadius: 5,
-                borderWidth: 1,
-                borderColor: "#ccc",
-              }}
-              onPress={() => handleCheckboxChange(2, index)}
-            >
-              <Text style={{ textAlign: "center" }}>{rowData.dinner}</Text>
-            </TouchableOpacity>
+              <Text style={{ color: "white", fontSize: 16 }}>Buy Now</Text>
+            </TouchableHighlight>
           </View>
-        ))}
-        <Text style={{ fontSize: 16, fontWeight: "bold", textAlign: "right", marginTop: 10 }}>{`Total: ₹${total}`}</Text>
-        <TouchableHighlight
-          style={{
-            backgroundColor: total === 0 ? "gray" : "#f37251",
-            padding: 10,
-            borderRadius: 5,
-            marginTop: 10,
-            alignItems: "center",
-          }}
-          disabled={total === 0}
-          onPress={initiatePayment}
-        >
-          <Text style={{ color: "white", fontSize: 16 }}>Buy Now</Text>
-        </TouchableHighlight>
-      </View>
-    </ScrollView>
+        </ScrollView>
+        ) : (
+          <Text>Coupon already bought</Text>
+          )
+        )}
+    </Protected>
   );
 };
 
