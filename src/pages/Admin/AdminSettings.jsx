@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Button, ScrollView, StyleSheet, TextInput, View, Text } from 'react-native'
+import { Button, ScrollView, StyleSheet, TextInput, View, Text, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { AuthContext } from '../../context/AuthContext'
 import AxiosInstance from '../../axios/config'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -14,26 +14,23 @@ const AdminSettings = () => {
     const [endTimePicker, setEndTimePicker] = useState({ visible: false, index: null });
 
     useEffect(() => {
-        fetchMenuData();
-        fetchMealData();
+        fetchData();
     }, []);
 
 
-    const fetchMenuData = async () => {
+    const fetchData = async () => {
         try {
-            const response = await AxiosInstance.get("/days/getMenu");
-            setMenuData(response.data);
+            setLoading(true);
+            const [menuResponse, mealResponse] = await Promise.all([
+                AxiosInstance.get("/days/getMenu"),
+                AxiosInstance.get("/meals/getMeals"),
+            ]);
+            setMenuData(menuResponse.data);
+            setMealData(mealResponse.data);
         } catch (error) {
-           console.log("Error", "Failed to fetch menu data");
-        }
-    };
-
-    const fetchMealData = async () => {
-        try {
-            const response = await AxiosInstance.get("/meals/getMeals");
-            setMealData(response.data);
-        } catch (error) {
-            console.log("Error", "Failed to fetch meal data");
+            console.log("Error fetching data", error);
+        } finally {
+            setLoading(false); // Stop loading after both API calls complete
         }
     };
 
@@ -55,14 +52,37 @@ const AdminSettings = () => {
         }
     };
 
+    const formatTime = (date) => {
+        return date ? new Date(date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "--:--";
+    };
+
+    if (loading) {
+        return <ActivityIndicator size="large" color="blue" style={styles.loader} />;
+    }
+
     return user.isAdmin ? (
         <ScrollView style={styles.container}>
-            {/* <Text style={styles.header}>Mess Timing</Text>
+            <Text style={styles.header}>Mess Timing</Text>
             {mealData.map((item, index) => (
                 <View key={index} style={styles.card}>
                     <Text style={styles.mealText}>{item.mealName.toUpperCase()}</Text>
-                    <Button title="Set Start Time" onPress={() => setStartTimePicker({ visible: true, index })} />
-                    <Button title="Set End Time" onPress={() => setEndTimePicker({ visible: true, index })} />
+
+                     {/* Start Time Section */}
+                     <View style={styles.timeContainer}>
+                        <Text style={styles.timeText}>{formatTime(item.startTime)}</Text>
+                        <TouchableOpacity onPress={() => setStartTimePicker({ visible: true, index })}>
+                            <Text>Set</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* End Time Section */}
+                    <View style={styles.timeContainer}>
+                        <Text style={styles.timeText}>{formatTime(item.endTime)}</Text>
+                        <TouchableOpacity onPress={() => setEndTimePicker({ visible: true, index })}>
+                            <Text>Set</Text>
+                        </TouchableOpacity>
+                    </View>
+
                     <TextInput
                         style={styles.input}
                         value={String(item.cost)}
@@ -75,7 +95,7 @@ const AdminSettings = () => {
                     />
                 </View>
             ))}
-            <Button title="Save Meals" onPress={updateMealData} /> */}
+            <Button title="Save Meals" onPress={updateMealData} />
 
             <Text style={styles.header}>Mess Menu</Text>
             {menuData.map((menu, index) => (
@@ -114,6 +134,7 @@ const AdminSettings = () => {
         
             <DateTimePickerModal
                 isVisible={startTimePicker.visible}
+                date={mealData[startTimePicker.index]?.startTime ? new Date(mealData[startTimePicker.index].startTime) : new Date()}
                 mode="time"
                 onConfirm={(date) => {
                     const newMeal = [...mealData];
@@ -126,6 +147,7 @@ const AdminSettings = () => {
 
             <DateTimePickerModal
                 isVisible={endTimePicker.visible}
+                date={mealData[endTimePicker.index]?.endTime ? new Date(mealData[endTimePicker.index].endTime) : new Date()}
                 mode="time"
                 onConfirm={(date) => {
                     const newMeal = [...mealData];
@@ -148,7 +170,17 @@ const styles = StyleSheet.create({
     card: { padding: 10, marginVertical: 5, backgroundColor: '#f8f8f8', borderRadius: 8 },
     mealText: { fontSize: 18, fontWeight: 'bold' },
     input: { borderWidth: 1, padding: 5, marginVertical: 5, borderRadius: 5 },
-    saveButton: { backgroundColor: 'green', padding: 10, borderRadius: 5, marginButton: 10 }
+    saveButton: { backgroundColor: 'green', padding: 10, borderRadius: 5, marginButton: 10 },
+    timeContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
+        marginVertical: 5,
+    },
+    timeText: {
+        fontSize: 16,
+    },
+    loader: { flex: 1, justifyContent: "center", alignItems: "center", marginTop: 20 }
 });
 
 export default AdminSettings
