@@ -1,18 +1,20 @@
-import React, { useContext, useEffect, useState } from "react";
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from "react-native";
-import AxiosInstance from "../axios/config";
+import React, { useContext, useEffect, useState, useRef } from "react";
+import { 
+  View, Text, ScrollView, ActivityIndicator, StyleSheet, TouchableOpacity 
+} from "react-native";
 import { Card, DataTable } from "react-native-paper";
-import Protected from "../common/Protected";
 import { AuthContext } from "../context/AuthContext";
-import axios from "axios";
+import AxiosInstance from "../axios/config";
+import Protected from "../common/Protected";
+import Icon from "react-native-vector-icons/AntDesign";
 
-const MenuPage = ({navigation}) => {
-  const {user} = useContext(AuthContext);
+const MenuPage = ({ navigation }) => {
+  const { user } = useContext(AuthContext);
   const [menuData, setMenuData] = useState([]);
   const [mealData, setMealData] = useState([]);
   const [loadingMenu, setLoadingMenu] = useState(false);
   const [loadingMeal, setLoadingMeal] = useState(false);
-
+  
   const [page, setPage] = useState(0);
   const itemsPerPage = 7;
 
@@ -20,7 +22,6 @@ const MenuPage = ({navigation}) => {
     setLoadingMenu(true);
     try {
       const response = await AxiosInstance.get("/days/getMenu");
-      console.log(response)
       setMenuData(response.data);
     } catch (error) {
       console.log("Error fetching menu data", error);
@@ -54,29 +55,36 @@ const MenuPage = ({navigation}) => {
     (page + 1) * itemsPerPage
   );
 
+
   return (
     <Protected navigation={navigation}>
       <ScrollView contentContainerStyle={styles.container}>
         {loadingMeal || loadingMenu ? (
-          <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator size="large" color="#007AFF" />
         ) : (
           <>
-            {/* Meal Cards */}
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mealScroll}>
-              {mealData.map((item, index) => {
-                const startTime = new Date(item.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                const endTime = new Date(item.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                return (
-                  <Card key={index} style={styles.mealCard}>
-                    <Card.Content>
+            {/* Meal Cards with Scroll Controls */}
+            <View style={styles.mealSection}>
+              
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.mealScroll}
+              >
+                {mealData.map((item, index) => {
+                  const startTime = new Date(item.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                  const endTime = new Date(item.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                  return (
+                    <View key={index} style={styles.mealCard}>
                       <Text style={styles.mealTitle}>{item.mealName}</Text>
                       <Text style={styles.mealTime}>{startTime} - {endTime}</Text>
                       <Text style={styles.mealCost}>Cost: ₹{item.cost}</Text>
-                    </Card.Content>
-                  </Card>
-                );
-              })}
-            </ScrollView>
+                    </View>
+                  );
+                })}
+              </ScrollView>
+
+            </View>
 
             {/* Menu Table */}
             <DataTable style={styles.tableContainer}>
@@ -111,68 +119,64 @@ const MenuPage = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: "#F3F4F6",
+    flex:1,
+    padding: 20,
+    backgroundColor: '#fff',
   },
-  cardContainer: {
+  mealSection: {
     flexDirection: "row",
-    flexWrap: "wrap",
+    alignItems: "center",
     justifyContent: "center",
-    marginBottom: 20,
+    marginVertical: 16,
   },
-  card: {
-    margin: 10,
-    padding: 10,
-    width: "45%",
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 8,
+  arrowButton: {
+    padding: 8,
   },
   mealScroll: {
-    marginVertical: 20,
+    flexGrow: 0,
+    paddingHorizontal: 10,
+    marginBottom: 10,
   },
   mealCard: {
-    width: 180,
-    marginRight: 12,
+    width: 200,
+    marginHorizontal: 10, // Space between cards
     paddingVertical: 16,
     paddingHorizontal: 12,
     borderRadius: 12,
-    backgroundColor: '#fff',
-    elevation: 4,
+    backgroundColor: "#F8F9FA",
+    shadowOffset: { width: 0, height: 2 },    
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    alignItems: "center", 
   },
   mealTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#1F2937',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 6,
+    textAlign: "center",
   },
   mealTime: {
     fontSize: 14,
-    color: '#4B5563',
+    color: "#666",
     marginBottom: 6,
-    textAlign: 'center',
+    textAlign: "center",
   },
   mealCost: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#10B981',
-    textAlign: 'center',
-  },  
-  menuContainer: {
-    backgroundColor: "#fff",
-    padding: 8,
-    borderRadius: 8,
-    elevation: 3,
-    marginBottom: 20,
+    fontWeight: "bold",
+    color: "#10B981",
+    textAlign: "center",
   },
   tableContainer: {
+    backgroundColor: "#FFFFFF",
     padding: 15,
+    borderRadius: 8,
+    elevation: 2,
+    marginBottom: 20,
   },
   tableHeader: {
-    backgroundColor: '#DCDCDC',
+    backgroundColor: "#E5E7EB",
   },
 });
 
