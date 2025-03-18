@@ -1,6 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import React, { useContext } from 'react'
+import React, { useContext, useState} from 'react'
 import MenuPage from './src/pages/Menu';
 import Purchase from './src/pages/Purchase';
 import MyCouponPage from './src/pages/MyCoupon';
@@ -8,56 +8,104 @@ import { AuthContext, AuthProvider } from './src/context/AuthContext';
 import Login from './src/pages/Auth/Login';
 import AdminSettings from './src/pages/Admin/AdminSettings';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Button } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-const BottomTabNavigator = () => {
-  const { logout } = useContext(AuthContext);
+
+const AvatarDropdown = () => {
+  const { user, logout } = useContext(AuthContext);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+
+  const initials = user?.name
+    ? user.name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+    : '?';
+
   return (
-  <Tab.Navigator
-        initialRouteName="Menu"
-        screenOptions={({ route }) => ({
-          // tabBarIcon: ({ color, size }) => {
-          //   let iconName;
-
-          //   if (route.name === 'Menu') {
-          //     iconName = 'restaurant-outline'; // Icon for Menu
-          //   } else if (route.name === 'Purchase') {
-          //     iconName = 'cart-outline'; // Icon for Purchase
-          //   }
-
-          //   return <Icon name={iconName} size={size} color={color} />;
-          // },
-          tabBarActiveTintColor: '#007AFF', // Active tab color
-          tabBarInactiveTintColor: 'gray', // Inactive tab color
-          tabBarStyle: { backgroundColor: 'white', paddingBottom: 5 }, // Styling
-        })}
+    <View>
+      <TouchableOpacity
+        style={styles.avatar}
+        onPress={() => setDropdownVisible(!dropdownVisible)}
       >
-        <Tab.Screen name="Menu" component={MenuPage} options={{
-            headerRight: () => (
-              <Button title="Logout" onPress={logout} color="#FF3B30" />
+        <Text style={styles.avatarText}>{initials}</Text>
+      </TouchableOpacity>
+      {dropdownVisible && (
+        <View style={styles.dropdown}>
+          <Text style={styles.userName}>{user.name}</Text>
+          <Text style={styles.userEmail}>{user.email}</Text>
+          <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+            <Text style={styles.logoutText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </View>
+  );
+};
+
+const BottomTabNavigator = () => {
+  const { user, logout } = useContext(AuthContext);
+
+  return (
+    <Tab.Navigator
+      initialRouteName="Menu"
+      screenOptions={{
+        tabBarActiveTintColor: '#007AFF',
+        tabBarInactiveTintColor: 'gray',
+        tabBarStyle: { backgroundColor: 'white', paddingBottom: 5 },
+      }}
+    >
+     <Tab.Screen 
+        name="Menu" 
+        component={MenuPage} 
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="restaurant-outline" size={size} color={color} />
+          ),
+          headerRight: () => <AvatarDropdown />,
+        }} 
+      />
+      <Tab.Screen 
+        name="Purchase" 
+        component={Purchase} 
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="cart-outline" size={size} color={color} />
+          ),
+          headerRight: () => <AvatarDropdown />,
+        }} 
+      />
+      <Tab.Screen 
+        name="Coupons" 
+        component={MyCouponPage} 
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="pricetag-outline" size={size} color={color} />
+          ),
+          headerRight: () => <AvatarDropdown />,
+        }} 
+      />
+      {user?.isAdmin && (
+        <Tab.Screen 
+          name="Admin" 
+          component={AdminSettings} 
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="settings-outline" size={size} color={color} />
             ),
-          }}/>
-        <Tab.Screen name="Purchase" component={Purchase} options={{
-            headerRight: () => (
-              <Button title="Logout" onPress={logout} color="#FF3B30" />
-            ),
-          }}/>
-        <Tab.Screen name="Coupons" component={MyCouponPage} options={{
-            headerRight: () => (
-              <Button title="Logout" onPress={logout} color="#FF3B30" />
-            ),
-          }}/>
-        <Tab.Screen name="Admin" component={AdminSettings} options={{
-            headerRight: () => (
-              <Button title="Logout" onPress={logout} color="#FF3B30" />
-            ),
-          }}/>
-      </Tab.Navigator>
-  )
-}
+            headerRight: () => <AvatarDropdown />,
+          }} 
+        />
+      )}
+    </Tab.Navigator>
+  );
+};
 
 const AppNavigator = () => {
   const { user } = useContext(AuthContext); // Check if user is logged in
@@ -82,5 +130,57 @@ const App = () => {
     </AuthProvider>
   )
 }
+
+const styles = StyleSheet.create({
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#007AFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 15,
+  },
+  avatarText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  dropdown: {
+    position: 'absolute',
+    right: 10,
+    top: 50,
+    width: 200,
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+    zIndex: 1000,
+  },
+  userName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  userEmail: {
+    fontSize: 14,
+    color: 'gray',
+    marginBottom: 10,
+  },
+  logoutButton: {
+    backgroundColor: '#FF3B30',
+    paddingVertical: 5,
+    borderRadius: 5,
+  },
+  logoutText: {
+    textAlign: 'center',
+    color: 'white',
+    fontWeight: 'bold',
+  },
+});
 
 export default App;

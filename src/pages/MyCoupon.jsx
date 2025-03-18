@@ -52,7 +52,7 @@ const MyCouponPage = ({navigation}) => {
     <Protected navigation={navigation}>
       <ScrollView contentContainerStyle={styles.container}>
         {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator size="large" color="#0000ff" style={styles.loader}/>
         ) : (
               <DataTable style={styles.tableContainer}>
                   <DataTable.Header style={styles.tableHeader}>
@@ -62,7 +62,7 @@ const MyCouponPage = ({navigation}) => {
                       <DataTable.Title>Dinner</DataTable.Title>
                   </DataTable.Header>
 
-                  {couponData.length > 0 ? (
+                  {couponData?.length > 0 ? (
                   <>
                   {menuData.map((row, dayIndex) => (
                       <DataTable.Row key={dayIndex}>
@@ -93,9 +93,11 @@ const MyCouponPage = ({navigation}) => {
 
 const styles = StyleSheet.create({
     container: {
-      padding: 16,
-      backgroundColor: "#F3F4F6",
+      flex:1,
+      padding: 20,
+      backgroundColor: '#fff',
     },
+    loader: { flex: 1, justifyContent: "center", alignItems: "center", marginTop: 20 },
     card: {
       padding: 16,
       backgroundColor: "#fff",
@@ -109,10 +111,14 @@ const styles = StyleSheet.create({
       textAlign: "center",
     },
     tableContainer: {
-        padding: 15,
+      backgroundColor: "#FFFFFF",
+      padding: 15,
+      borderRadius: 8,
+      elevation: 2,
+      marginBottom: 20,
     },
     tableHeader: {
-        backgroundColor: '#DCDCDC',
+      backgroundColor: "#E5E7EB",
     },
     greenCell: {
       backgroundColor: "#ceface",

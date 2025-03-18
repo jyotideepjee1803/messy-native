@@ -8,6 +8,7 @@ import axios from "axios";
 
 const Purchase = ({navigation}) => {
   const {user} = useContext(AuthContext);
+  console.log(user);
   const userId = user.userId;
   const [coupon, setCoupon] = useState([]);
   const [menuData, setMenuData] = useState([]);
@@ -75,8 +76,8 @@ const Purchase = ({navigation}) => {
     try{
       setLoadingCoupon(true);
       const response = await AxiosInstance.get(`/coupons?userId=${userId}`);
-      console.log(response.data.coupons[0]);
-      setCoupon(response.data.coupons[0]);
+      console.log(response.data.coupons);
+      setCoupon(response.data.coupons);
     }catch(error){
       console.error("Error fetching coupon data:", error)
     }

@@ -6,7 +6,6 @@ import { Card, DataTable } from "react-native-paper";
 import { AuthContext } from "../context/AuthContext";
 import AxiosInstance from "../axios/config";
 import Protected from "../common/Protected";
-import Icon from "react-native-vector-icons/AntDesign";
 
 const MenuPage = ({ navigation }) => {
   const { user } = useContext(AuthContext);
@@ -60,7 +59,7 @@ const MenuPage = ({ navigation }) => {
     <Protected navigation={navigation}>
       <ScrollView contentContainerStyle={styles.container}>
         {loadingMeal || loadingMenu ? (
-          <ActivityIndicator size="large" color="#007AFF" />
+          <ActivityIndicator size="large" color="#007AFF" style={styles.loader}/>
         ) : (
           <>
             {/* Meal Cards with Scroll Controls */}
@@ -123,6 +122,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
   },
+  loader: { flex: 1, justifyContent: "center", alignItems: "center", marginTop: 20 },
   mealSection: {
     flexDirection: "row",
     alignItems: "center",

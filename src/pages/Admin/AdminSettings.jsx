@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Button, ScrollView, StyleSheet, TextInput, View, Text, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { Button, ScrollView, StyleSheet, View, Text, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { TextInput } from 'react-native-paper'
 import { AuthContext } from '../../context/AuthContext'
 import AxiosInstance from '../../axios/config'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -84,7 +85,8 @@ const AdminSettings = () => {
                     </View>
 
                     <TextInput
-                        style={styles.input}
+                        label={"Cost"}
+                        mode='outlined'
                         value={String(item.cost)}
                         keyboardType="numeric"
                         onChangeText={(text) => {
@@ -95,14 +97,19 @@ const AdminSettings = () => {
                     />
                 </View>
             ))}
-            <Button title="Save Meals" onPress={updateMealData} />
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.saveButton} onPress={updateMealData}>
+                    <Text style={styles.buttonText}>Save Meals</Text>
+                </TouchableOpacity>
+            </View>
 
             <Text style={styles.header}>Mess Menu</Text>
             {menuData.map((menu, index) => (
                 <View key={index} style={styles.card}>
-                    <Text>{menu.day}</Text>
+                    <Text style={styles.menuText}>{menu.day}</Text>
                     <TextInput
-                        style={styles.input}
+                        mode='outlined'
+                        label={'Breakfast'}
                         value={menu.breakfast}
                         onChangeText={(text) => {
                             const newMenu = [...menuData];
@@ -111,7 +118,8 @@ const AdminSettings = () => {
                         }}
                     />
                     <TextInput
-                        style={styles.input}
+                        mode='outlined'
+                        label={'Lunch'}
                         value={menu.lunch}
                         onChangeText={(text) => {
                             const newMenu = [...menuData];
@@ -120,7 +128,8 @@ const AdminSettings = () => {
                         }}
                     />
                     <TextInput
-                        style={styles.input}
+                        mode='outlined'
+                        label={'Dinner'}
                         value={menu.dinner}
                         onChangeText={(text) => {
                             const newMenu = [...menuData];
@@ -130,7 +139,11 @@ const AdminSettings = () => {
                     />
                 </View>
             ))}
-            <Button title="Save Menu" onPress={updateMenuData} style={styles.saveButton}/>
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.saveButton} onPress={updateMenuData}>
+                    <Text style={styles.buttonText}>Save Menu</Text>
+                </TouchableOpacity>
+            </View>
         
             <DateTimePickerModal
                 isVisible={startTimePicker.visible}
@@ -167,10 +180,9 @@ const AdminSettings = () => {
 const styles = StyleSheet.create({
     container: { padding: 20 },
     header: { fontSize: 24, fontWeight: 'bold', marginBottom: 10 },
-    card: { padding: 10, marginVertical: 5, backgroundColor: '#f8f8f8', borderRadius: 8 },
+    card: { padding: 10, marginVertical: 5, backgroundColor: '#f8f8f8', borderRadius: 8, gap: 5 },
     mealText: { fontSize: 18, fontWeight: 'bold' },
-    input: { borderWidth: 1, padding: 5, marginVertical: 5, borderRadius: 5 },
-    saveButton: { backgroundColor: 'green', padding: 10, borderRadius: 5, marginButton: 10 },
+    menuText: { fontSize: 18, fontWeight: 'bold', marginBottom:10 },
     timeContainer: {
         flexDirection: "row",
         alignItems: "center",
@@ -180,7 +192,27 @@ const styles = StyleSheet.create({
     timeText: {
         fontSize: 16,
     },
-    loader: { flex: 1, justifyContent: "center", alignItems: "center", marginTop: 20 }
+    loader: { flex: 1, justifyContent: "center", alignItems: "center", marginTop: 20 },
+    buttonContainer: {
+        marginVertical: 20,
+        paddingVertical: 10,
+        alignItems: 'center', // Center horizontally
+    },
+    
+    saveButton: {
+        backgroundColor: '#1E90FF',
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '80%',
+    }, 
+    buttonText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
 });
 
 export default AdminSettings
