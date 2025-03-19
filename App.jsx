@@ -11,6 +11,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MealCount from './src/pages/Admin/MealCount';
+import SignUp from './src/pages/Auth/SignUp';
 
 
 const Tab = createBottomTabNavigator();
@@ -57,9 +58,16 @@ const BottomTabNavigator = () => {
     <Tab.Navigator
       initialRouteName="Menu"
       screenOptions={{
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: 'gray',
-        tabBarStyle: { backgroundColor: 'white', paddingBottom: 5 },
+        headerShown: true,
+        // headerTransparent: true,
+        headerStyle: {
+          elevation: 5, 
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          borderBottomRightRadius: 20,
+          borderBottomLeftRadius: 20,
+        },
+        headerRight: () => <AvatarDropdown />,
       }}
     >
      <Tab.Screen 
@@ -69,7 +77,6 @@ const BottomTabNavigator = () => {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="restaurant-outline" size={size} color={color} />
           ),
-          headerRight: () => <AvatarDropdown />,
         }} 
       />
       {!user?.isAdmin && (
@@ -81,7 +88,6 @@ const BottomTabNavigator = () => {
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="cart-outline" size={size} color={color} />
             ),
-            headerRight: () => <AvatarDropdown />,
           }} 
         />
         <Tab.Screen 
@@ -91,7 +97,6 @@ const BottomTabNavigator = () => {
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="pricetag-outline" size={size} color={color} />
             ),
-            headerRight: () => <AvatarDropdown />,
           }} 
         />
       </>
@@ -105,7 +110,6 @@ const BottomTabNavigator = () => {
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="settings-outline" size={size} color={color} />
             ),
-            headerRight: () => <AvatarDropdown />,
           }} 
         />
 
@@ -116,7 +120,6 @@ const BottomTabNavigator = () => {
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="bag-outline" size={size} color={color} />
             ),
-            headerRight: () => <AvatarDropdown />,
           }} 
         />
         </>
@@ -142,7 +145,10 @@ const AppNavigator = () => {
       {user ? (
         <Stack.Screen name="Tabs" component={BottomTabNavigator} />
       ) : (
-        <Stack.Screen name="Login" component={Login} />
+        <>
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Signup" component={SignUp} />
+        </>
       )}
     </Stack.Navigator>
   );
@@ -163,7 +169,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#007AFF',
+    backgroundColor: 'rgba(196, 196, 196, 0.8)',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 15,

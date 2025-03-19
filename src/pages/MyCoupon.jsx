@@ -1,10 +1,11 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { View, Text, ScrollView, ActivityIndicator, StyleSheet, FlatList } from "react-native";
 import AxiosInstance from "../axios/config";
 import { Card, DataTable } from "react-native-paper";
 import { AuthContext } from "../context/AuthContext";
 import Protected from "../common/Protected";
 import axios from "axios";
+import { useFocusEffect } from "@react-navigation/native";
 
 const dayOrder = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 
@@ -44,9 +45,11 @@ const MyCouponPage = ({navigation}) => {
     }
   };
 
-  useEffect(() => {
-    fetchCouponData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchCouponData();
+    }, [])
+  );
 
   return (
     <Protected navigation={navigation}>

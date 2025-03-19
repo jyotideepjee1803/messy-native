@@ -7,27 +7,40 @@ import logo from '../../../assets/logo.png';
 import { Formik } from "formik";
 import * as Yup from "yup";
 
-const LoginSchema = Yup.object().shape({
+const SignUpSchema = Yup.object().shape({
+  firstName: Yup.string().required("First name is required"),
+  lastName: Yup.string(),  // Optional
   email: Yup.string().email("Invalid email").required("Email is required"),
   password: Yup.string().min(6, "Password too short").required("Password is required"),
+  confirmPassword: Yup.string()
+  .oneOf([Yup.ref('password'), null], 'Passwords must match')
+  .required('Confirm Password is required'),
 });
 
-const Login = () => {
+const SignUp = () => {
   const navigation = useNavigation();
   const { login } = useContext(AuthContext);
 
-  const handleLogin = async (values, actions) => {
+  const handleSignUp = async (values, actions) => {
     try {
-      const response = await AxiosInstance.post("/users/signIn", values);
+      const fullName = values.firstName + (values.lastName ? ` ${values.lastName}` : "");
+      const userPayload = {
+        name: fullName,
+        email: values.email,
+        password: values.password,
+        isAdmin: false,
+      };
+
+      const response = await AxiosInstance.post("/users/signUp", userPayload);
 
       const { _id, token, name, isAdmin } = response.data;
       const userData = { userId: _id, token, name, email: values.email, isAdmin };
       
-      login(userData); 
+      login(userData);
       navigation.navigate('Tabs', { screen: 'Menu' });
     } catch (error) {
-      console.error("Login error:", error.response?.data || error.message);
-      Alert.alert("Login Failed", error.response?.data?.message || "Invalid email or password.");
+      console.error("SignUp error:", error.response?.data || error.message);
+      Alert.alert("SignUp Failed", error.response?.data?.message || "Something went wrong.");
     } finally {
       actions.setSubmitting(false);
     }
@@ -36,14 +49,31 @@ const Login = () => {
   return (
     <View style={styles.container}>
       <Image source={logo} style={styles.logo} />
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>Sign Up</Text>
       <Formik
-        initialValues={{ email: "", password: "" }}
-        validationSchema={LoginSchema}
-        onSubmit={handleLogin}
+        initialValues={{ firstName: "", lastName: "", email: "", password: "" }}
+        validationSchema={SignUpSchema}
+        onSubmit={handleSignUp}
       >
         {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isSubmitting }) => (
           <>
+            <TextInput
+              style={styles.input}
+              placeholder="First Name"
+              value={values.firstName}
+              onChangeText={handleChange("firstName")}
+              onBlur={handleBlur("firstName")}
+            />
+            {touched.firstName && errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
+
+            <TextInput
+              style={styles.input}
+              placeholder="Last Name (Optional)"
+              value={values.lastName}
+              onChangeText={handleChange("lastName")}
+              onBlur={handleBlur("lastName")}
+            />
+
             <TextInput
               style={styles.input}
               placeholder="Email"
@@ -54,6 +84,7 @@ const Login = () => {
               autoCapitalize="none"
             />
             {touched.email && errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+
             <TextInput
               style={styles.input}
               placeholder="Password"
@@ -63,14 +94,25 @@ const Login = () => {
               secureTextEntry
             />
             {touched.password && errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+
+            <TextInput
+              style={styles.input}
+              placeholder="Confirm Password"
+              value={values.confirmPassword}
+              onChangeText={handleChange("confirmPassword")}
+              onBlur={handleBlur("confirmPassword")}
+              secureTextEntry
+            />
+            {touched.confirmPassword && errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
+
             <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={isSubmitting}>
-              <Text style={styles.buttonText}>{isSubmitting ? "Logging in..." : "Login"}</Text>
+              <Text style={styles.buttonText}>{isSubmitting ? "Signing Up..." : "Sign Up"}</Text>
             </TouchableOpacity>
           </>
         )}
       </Formik>
-      <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-        <Text style={styles.signupText}>Don't have an account? <Text style={styles.signupLink}>Sign up</Text></Text>
+      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+        <Text style={styles.signupText}>Already have an account? <Text style={styles.signupLink}>Sign in</Text></Text>
       </TouchableOpacity>
     </View>
   );
@@ -135,4 +177,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+export default SignUp;

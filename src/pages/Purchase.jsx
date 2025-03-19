@@ -4,7 +4,8 @@ import AxiosInstance from "../axios/config";
 import RazorpayCheckout from "react-native-razorpay";
 import { AuthContext } from "../context/AuthContext";
 import Protected from "../common/Protected";
-import axios from "axios";
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useFocusEffect } from "@react-navigation/native";
 
 const Purchase = ({navigation}) => {
   const {user} = useContext(AuthContext);
@@ -76,7 +77,8 @@ const Purchase = ({navigation}) => {
     try{
       setLoadingCoupon(true);
       const response = await AxiosInstance.get(`/coupons?userId=${userId}`);
-      console.log(response.data.coupons);
+      // console.log(response.data.coupons);
+      if(response.data.coupons) setBought(true);
       setCoupon(response.data.coupons);
     }catch(error){
       console.error("Error fetching coupon data:", error)
@@ -86,11 +88,14 @@ const Purchase = ({navigation}) => {
     }
   }
 
-  useEffect(() => {
-    fetchMenuData();
-    fetchMealCosts();
-    fetchCouponData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      // Fetch or reload data when the screen is focused
+      fetchMenuData();
+      fetchMealCosts();
+      fetchCouponData();
+    }, [bought])
+  );
 
   const handleCheckboxChange = (mealIndex, dayIndex) => {
     setSelectedItems((prevSelected) =>
@@ -119,7 +124,7 @@ const Purchase = ({navigation}) => {
     const resp = await AxiosInstance.post(`payments?userId=${userId}`, data);
       if (resp.data) {
           Alert.alert('Success', 'Coupon Bought Successfully');
-          setBought(true);
+          // setBought(true);
       } else {
           Alert.alert('Failed', 'Transaction Failed');
       }
@@ -143,10 +148,11 @@ const Purchase = ({navigation}) => {
         theme: {color: '#53a20e'}
       };
       RazorpayCheckout.open(options).then((data) => {
+        setBought(true);
         paymentStatus(data);
       }).catch((error) => {
         // handle failure
-        alert(`Error: ${error.code} | ${error.description}`);
+        alert(`Error: Transaction Failed with code: ${error.code}`);
       });
     } catch (error) {
       console.error("Transaction Failed", error);
@@ -157,7 +163,7 @@ const Purchase = ({navigation}) => {
     <Protected navigation={navigation}>
       {loadingMenu || loadingCoupon ? (
         <ActivityIndicator size="large" color="#0000ff" style={{ flex: 1, justifyContent: "center" }} />
-      ) : (!bought && (!coupon || ((coupon.taken===true && getDayDifference(currentDateTime, coupon.updatedAt) >=5) || coupon.taken===false)) ? (
+      ) : (!bought || (!coupon || ((coupon.taken===true && getDayDifference(currentDateTime, coupon.updatedAt) >=5) || coupon.taken===false)) ? (
           <ScrollView contentContainerStyle={{ padding: 20 }}>
           <View style={{ backgroundColor: "white", padding: 10, borderRadius: 10, elevation: 3 }}>
             <Text style={{ fontSize: 18, fontWeight: "bold", textAlign: "center", marginBottom: 10 }}>Meal Plan</Text>
@@ -231,7 +237,10 @@ const Purchase = ({navigation}) => {
           </View>
         </ScrollView>
         ) : (
-          <Text>Coupon already bought</Text>
+          <View style={{flex: 1, justifyContent: 'center',alignItems: 'center'}}>
+            <Ionicons name="checkmark-circle-outline" size={100} color="green" />
+            <Text style={{fontSize: 24, fontWeight: 'bold', color: 'green', marginTop: 10,}}>Coupon already bought!</Text>
+          </View>
           )
         )}
     </Protected>
