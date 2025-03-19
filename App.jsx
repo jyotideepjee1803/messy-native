@@ -8,8 +8,9 @@ import { AuthContext, AuthProvider } from './src/context/AuthContext';
 import Login from './src/pages/Auth/Login';
 import AdminSettings from './src/pages/Admin/AdminSettings';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import MealCount from './src/pages/Admin/MealCount';
 
 
 const Tab = createBottomTabNavigator();
@@ -71,27 +72,32 @@ const BottomTabNavigator = () => {
           headerRight: () => <AvatarDropdown />,
         }} 
       />
-      <Tab.Screen 
-        name="Purchase" 
-        component={Purchase} 
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="cart-outline" size={size} color={color} />
-          ),
-          headerRight: () => <AvatarDropdown />,
-        }} 
-      />
-      <Tab.Screen 
-        name="Coupons" 
-        component={MyCouponPage} 
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="pricetag-outline" size={size} color={color} />
-          ),
-          headerRight: () => <AvatarDropdown />,
-        }} 
-      />
+      {!user?.isAdmin && (
+        <>
+        <Tab.Screen 
+          name="Purchase" 
+          component={Purchase} 
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="cart-outline" size={size} color={color} />
+            ),
+            headerRight: () => <AvatarDropdown />,
+          }} 
+        />
+        <Tab.Screen 
+          name="Coupons" 
+          component={MyCouponPage} 
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="pricetag-outline" size={size} color={color} />
+            ),
+            headerRight: () => <AvatarDropdown />,
+          }} 
+        />
+      </>
+      )}
       {user?.isAdmin && (
+        <>
         <Tab.Screen 
           name="Admin" 
           component={AdminSettings} 
@@ -102,13 +108,34 @@ const BottomTabNavigator = () => {
             headerRight: () => <AvatarDropdown />,
           }} 
         />
+
+        <Tab.Screen 
+          name="Inventory" 
+          component={MealCount} 
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="bag-outline" size={size} color={color} />
+            ),
+            headerRight: () => <AvatarDropdown />,
+          }} 
+        />
+        </>
       )}
     </Tab.Navigator>
   );
 };
 
 const AppNavigator = () => {
-  const { user } = useContext(AuthContext); // Check if user is logged in
+  const { user, loading } = useContext(AuthContext); // Check if user is logged in
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+         <Image source={require('./assets/logo.png')} style={{width: 150, height: 150, resizeMode: 'contain'}} />
+      </View>
+    );
+  }
+
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>

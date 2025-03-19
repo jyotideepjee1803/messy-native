@@ -19,7 +19,7 @@ const Purchase = ({navigation}) => {
   );
   const [mealCost, setMealCost] = useState({ breakfast: 0, lunch: 0, dinner: 0 });
   const [total, setTotal] = useState(0);
-
+  const [bought, setBought] = useState(false);
   const sortIdx = useMemo(() => ({ Monday: 0, Tuesday: 1, Wednesday: 2, Thursday: 3, Friday: 4, Saturday: 5, Sunday: 6 }), []);
   const mp = useMemo(() => ({ breakfast: 0, lunch: 1, dinner: 2 }), []);
 
@@ -117,14 +117,9 @@ const Purchase = ({navigation}) => {
 
   const paymentStatus = async(data)=>{
     const resp = await AxiosInstance.post(`payments?userId=${userId}`, data);
-    // await axios.post(`http://192.168.1.67:5000/payments?userId=${userId}`, data, {
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: `Bearer ${user.token}`,
-    //   },
-    //   });
       if (resp.data) {
           Alert.alert('Success', 'Coupon Bought Successfully');
+          setBought(true);
       } else {
           Alert.alert('Failed', 'Transaction Failed');
       }
@@ -133,12 +128,6 @@ const Purchase = ({navigation}) => {
   const initiatePayment = async () => {
     try {
       const res = await AxiosInstance.post("payments/initiate", {userId, amount: total, selected: selectedItems });
-      // await axios.post("http://192.168.1.67:5000/payments/initiate", {userId, amount: total, selected: selectedItems }, { 
-      //   headers: {
-      //   "Content-Type": "application/json",
-      //   Authorization: `Bearer ${user.token}`,
-      // }});
-      console.log(res)
       const options = {
         description: 'Coupon Purchase',
         image: 'https://i.imgur.com/3g7nmJC.png',
@@ -154,9 +143,6 @@ const Purchase = ({navigation}) => {
         theme: {color: '#53a20e'}
       };
       RazorpayCheckout.open(options).then((data) => {
-        // handle success
-        // alert(`Success: ${data.razorpay_payment_id}`);
-        console.log(data);
         paymentStatus(data);
       }).catch((error) => {
         // handle failure
@@ -171,7 +157,7 @@ const Purchase = ({navigation}) => {
     <Protected navigation={navigation}>
       {loadingMenu || loadingCoupon ? (
         <ActivityIndicator size="large" color="#0000ff" style={{ flex: 1, justifyContent: "center" }} />
-      ) : (!coupon || ((coupon.taken===true && getDayDifference(currentDateTime, coupon.updatedAt) >=5) || coupon.taken===false) ? (
+      ) : (!bought && (!coupon || ((coupon.taken===true && getDayDifference(currentDateTime, coupon.updatedAt) >=5) || coupon.taken===false)) ? (
           <ScrollView contentContainerStyle={{ padding: 20 }}>
           <View style={{ backgroundColor: "white", padding: 10, borderRadius: 10, elevation: 3 }}>
             <Text style={{ fontSize: 18, fontWeight: "bold", textAlign: "center", marginBottom: 10 }}>Meal Plan</Text>

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Button, ScrollView, StyleSheet, View, Text, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { Button, ScrollView, StyleSheet, View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
 import { TextInput } from 'react-native-paper'
 import { AuthContext } from '../../context/AuthContext'
 import AxiosInstance from '../../axios/config'
@@ -38,7 +38,7 @@ const AdminSettings = () => {
     const updateMenuData = async () => {
         try {
             await AxiosInstance.post('/days/setMenu', { menuData });
-            console.log("Menu changes saved");
+            Alert.alert('Success',"Menu changes saved");
         } catch (error) {
             console.log("Error", "Failed to update menu");
         }
@@ -47,7 +47,7 @@ const AdminSettings = () => {
     const updateMealData = async () => {
         try {
             await AxiosInstance.post('/meals/setMeals', { mealData });
-            console.log("Meals updated successfully");
+            Alert.alert("Meals updated successfully");
         } catch (error) {
             console.log("Error", "Failed to update meals");
         }
@@ -68,20 +68,39 @@ const AdminSettings = () => {
                 <View key={index} style={styles.card}>
                     <Text style={styles.mealText}>{item.mealName.toUpperCase()}</Text>
 
-                     {/* Start Time Section */}
-                     <View style={styles.timeContainer}>
+                     {/* <View style={styles.timeContainer}>
                         <Text style={styles.timeText}>{formatTime(item.startTime)}</Text>
                         <TouchableOpacity onPress={() => setStartTimePicker({ visible: true, index })}>
                             <Text>Set</Text>
                         </TouchableOpacity>
                     </View>
 
-                    {/* End Time Section */}
                     <View style={styles.timeContainer}>
                         <Text style={styles.timeText}>{formatTime(item.endTime)}</Text>
                         <TouchableOpacity onPress={() => setEndTimePicker({ visible: true, index })}>
                             <Text>Set</Text>
                         </TouchableOpacity>
+                    </View> */}
+
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <TouchableOpacity onPress={()=> setStartTimePicker({visible: true, index})}>
+                        <TextInput
+                        label="Start Time"
+                        mode='outlined'
+                        value={formatTime(item.startTime)}
+                        editable={false}
+                        right={<TextInput.Icon icon="clock" />}
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setEndTimePicker({ visible: true, index })}>
+                        <TextInput
+                        label="End Time"
+                        mode='outlined'
+                        value={formatTime(item.endTime)}
+                        editable={false}
+                        right={<TextInput.Icon icon="clock" />}
+                        />
+                    </TouchableOpacity>
                     </View>
 
                     <TextInput
