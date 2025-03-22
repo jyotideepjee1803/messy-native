@@ -61,9 +61,9 @@ const BottomTabNavigator = () => {
         headerShown: true,
         // headerTransparent: true,
         headerStyle: {
-          elevation: 5, 
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
+          // elevation: 5, 
+          // shadowColor: '#000',
+          // shadowOffset: { width: 0, height: 2 },
           borderBottomRightRadius: 20,
           borderBottomLeftRadius: 20,
         },

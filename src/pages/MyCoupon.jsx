@@ -1,23 +1,23 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet, FlatList } from "react-native";
+import React, { useCallback, useContext, useState } from "react";
+import { View, Text, ScrollView, ActivityIndicator, StyleSheet, TouchableOpacity, Modal, SafeAreaView } from "react-native";
+import QRCode from "react-native-qrcode-svg";
 import AxiosInstance from "../axios/config";
 import { Card, DataTable } from "react-native-paper";
 import { AuthContext } from "../context/AuthContext";
 import Protected from "../common/Protected";
-import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
 
 const dayOrder = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 
 const MyCouponPage = ({navigation}) => {
   const {user} = useContext(AuthContext);
-  console.log(user)
   const userId = user.userId;
 
   const [couponData, setCouponData] = useState([]);
   const [menuData, setMenuData] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const [qrVisible, setQrVisible] = useState(false);
+  const [selectedMeal, setSelectedMeal] = useState(null);
 
   const fetchCouponData = async () => {
     setLoading(true);
@@ -51,9 +51,15 @@ const MyCouponPage = ({navigation}) => {
     }, [])
   );
 
+  const handleShowQR = (dayIndex, mealType) => {
+    const qrData = JSON.stringify({ userId, dayIndex, mealType });
+    setSelectedMeal(qrData);
+    setQrVisible(true);
+  };
+
   return (
     <Protected navigation={navigation}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <SafeAreaView style={styles.container}>
         {loading ? (
           <ActivityIndicator size="large" color="#0000ff" style={styles.loader}/>
         ) : (
@@ -70,14 +76,37 @@ const MyCouponPage = ({navigation}) => {
                   {menuData.map((row, dayIndex) => (
                       <DataTable.Row key={dayIndex}>
                           <DataTable.Cell>{row.day}</DataTable.Cell>
-                          <DataTable.Cell style={couponData[0].week[0][dayIndex] ? styles.greenCell : null}>
-                          {row.breakfast || "N/A"}
+                          {/* Breakfast */}
+                          <DataTable.Cell>
+                            {couponData[0].week[0][dayIndex] ? (
+                              <TouchableOpacity onPress={() => handleShowQR(dayIndex, "breakfast")}>
+                                <Text style={styles.greenCell}>{row.breakfast}</Text>
+                              </TouchableOpacity>
+                            ) : (
+                              <Text>{row.breakfast}</Text>
+                            )}
                           </DataTable.Cell>
-                          <DataTable.Cell style={couponData[0].week[1][dayIndex] ? styles.greenCell : null}>
-                          {row.lunch || "N/A"}
+
+                          {/* Lunch */}
+                          <DataTable.Cell>
+                            {couponData[0].week[1][dayIndex] ? (
+                              <TouchableOpacity onPress={() => handleShowQR(dayIndex, "lunch")}>
+                                <Text style={styles.greenCell}>{row.lunch}</Text>
+                              </TouchableOpacity>
+                            ) : (
+                              <Text>{row.lunch}</Text>
+                            )}
                           </DataTable.Cell>
-                          <DataTable.Cell style={couponData[0].week[2][dayIndex] ? styles.greenCell : null}>
-                          {row.dinner || "N/A"}
+
+                          {/* Dinner */}
+                          <DataTable.Cell>
+                            {couponData[0].week[2][dayIndex] ? (
+                              <TouchableOpacity onPress={() => handleShowQR(dayIndex, "dinner")}>
+                                <Text style={styles.greenCell}>{row.dinner}</Text>
+                              </TouchableOpacity>
+                            ) : (
+                              <Text>{row.dinner}</Text>
+                            )}
                           </DataTable.Cell>
                       </DataTable.Row>
                       ))}
@@ -89,7 +118,19 @@ const MyCouponPage = ({navigation}) => {
                   )}
               </DataTable>
         )}
-      </ScrollView>
+
+        <Modal visible={qrVisible} transparent={true} onRequestClose={() => setQrVisible(false)} animationType="slide">
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.header}>Scan this QR Code</Text>
+              {selectedMeal && <QRCode value={selectedMeal} size={200} />}
+              <TouchableOpacity onPress={() => setQrVisible(false)} style={styles.closeButton}>
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      </SafeAreaView>
     </Protected>
   );
 };
@@ -107,12 +148,6 @@ const styles = StyleSheet.create({
       borderRadius: 10,
       elevation: 4,
     },
-    header: {
-      fontSize: 20,
-      fontWeight: "bold",
-      marginBottom: 10,
-      textAlign: "center",
-    },
     tableContainer: {
       backgroundColor: "#FFFFFF",
       padding: 15,
@@ -127,6 +162,33 @@ const styles = StyleSheet.create({
       backgroundColor: "#ceface",
       borderRadius: 5,
       padding: 4,
+    },
+    modalContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalContent: {
+      backgroundColor: "white",
+      padding: 20,
+      borderRadius: 10,
+      alignItems: "center",
+    },
+    header: {
+      fontSize: 18,
+      fontWeight: "bold",
+      marginBottom: 10,
+    },
+    closeButton: {
+      marginTop: 20,
+      padding: 10,
+      backgroundColor: "#ff5555",
+      borderRadius: 5,
+    },
+    closeButtonText: {
+      color: "white",
+      fontWeight: "bold",
     },
 });
 
