@@ -12,6 +12,7 @@ import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Image } fr
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MealCount from './src/pages/Admin/MealCount';
 import SignUp from './src/pages/Auth/SignUp';
+import ScanCoupon from './src/pages/Admin/ScanCoupon';
 
 
 const Tab = createBottomTabNavigator();
@@ -122,7 +123,19 @@ const BottomTabNavigator = () => {
             ),
           }} 
         />
+
+        <Tab.Screen 
+          name="Scan" 
+          component={ScanCoupon} 
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="scan-sharp" size={size} color={color} />
+            ),
+          }} 
+        />
         </>
+
+        
       )}
     </Tab.Navigator>
   );

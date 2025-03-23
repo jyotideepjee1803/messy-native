@@ -52,7 +52,8 @@ const MyCouponPage = ({navigation}) => {
   );
 
   const handleShowQR = (dayIndex, mealType) => {
-    const qrData = JSON.stringify({ userId, dayIndex, mealType });
+    const qrData = JSON.stringify({ userId, dayIndex, mealType});
+    console.log(qrData);
     setSelectedMeal(qrData);
     setQrVisible(true);
   };
@@ -63,6 +64,8 @@ const MyCouponPage = ({navigation}) => {
         {loading ? (
           <ActivityIndicator size="large" color="#0000ff" style={styles.loader}/>
         ) : (
+              <>
+              <Text style={styles.heading}>Tap on a meal to show the QR Code</Text>
               <DataTable style={styles.tableContainer}>
                   <DataTable.Header style={styles.tableHeader}>
                       <DataTable.Title>Day</DataTable.Title>
@@ -79,7 +82,7 @@ const MyCouponPage = ({navigation}) => {
                           {/* Breakfast */}
                           <DataTable.Cell>
                             {couponData[0].week[0][dayIndex] ? (
-                              <TouchableOpacity onPress={() => handleShowQR(dayIndex, "breakfast")}>
+                              <TouchableOpacity onPress={() => handleShowQR(dayIndex, 0)}>
                                 <Text style={styles.greenCell}>{row.breakfast}</Text>
                               </TouchableOpacity>
                             ) : (
@@ -90,7 +93,7 @@ const MyCouponPage = ({navigation}) => {
                           {/* Lunch */}
                           <DataTable.Cell>
                             {couponData[0].week[1][dayIndex] ? (
-                              <TouchableOpacity onPress={() => handleShowQR(dayIndex, "lunch")}>
+                              <TouchableOpacity onPress={() => handleShowQR(dayIndex, 1)}>
                                 <Text style={styles.greenCell}>{row.lunch}</Text>
                               </TouchableOpacity>
                             ) : (
@@ -101,7 +104,7 @@ const MyCouponPage = ({navigation}) => {
                           {/* Dinner */}
                           <DataTable.Cell>
                             {couponData[0].week[2][dayIndex] ? (
-                              <TouchableOpacity onPress={() => handleShowQR(dayIndex, "dinner")}>
+                              <TouchableOpacity onPress={() => handleShowQR(dayIndex, 2)}>
                                 <Text style={styles.greenCell}>{row.dinner}</Text>
                               </TouchableOpacity>
                             ) : (
@@ -117,6 +120,7 @@ const MyCouponPage = ({navigation}) => {
                   </DataTable.Row>
                   )}
               </DataTable>
+            </>
         )}
 
         <Modal visible={qrVisible} transparent={true} onRequestClose={() => setQrVisible(false)} animationType="slide">
@@ -142,6 +146,12 @@ const styles = StyleSheet.create({
       backgroundColor: '#fff',
     },
     loader: { flex: 1, justifyContent: "center", alignItems: "center", marginTop: 20 },
+    heading: {
+      fontSize: 18,
+      fontWeight: "bold",
+      textAlign: "center",
+      marginBottom: 10,
+    },
     card: {
       padding: 16,
       backgroundColor: "#fff",
