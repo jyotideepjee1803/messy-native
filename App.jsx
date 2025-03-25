@@ -1,4 +1,4 @@
-import { NavigationContainer } from '@react-navigation/native'
+import { NavigationContainer, useNavigation } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useContext, useState} from 'react'
 import MenuPage from './src/pages/Menu';
@@ -13,6 +13,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MealCount from './src/pages/Admin/MealCount';
 import SignUp from './src/pages/Auth/SignUp';
 import ScanCoupon from './src/pages/Admin/ScanCoupon';
+import Profile from './src/pages/Profile';
 
 
 const Tab = createBottomTabNavigator();
@@ -20,35 +21,15 @@ const Stack = createNativeStackNavigator();
 
 
 const AvatarDropdown = () => {
-  const { user, logout } = useContext(AuthContext);
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-
-  const initials = user?.name
-    ? user.name
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-    : '?';
+  const navigation = useNavigation();
 
   return (
-    <View>
       <TouchableOpacity
         style={styles.avatar}
-        onPress={() => setDropdownVisible(!dropdownVisible)}
+        onPress={() => navigation.navigate('Profile')}
       >
-        <Text style={styles.avatarText}>{initials}</Text>
+        <Ionicons name="person-circle-outline" size={40} color="white" />
       </TouchableOpacity>
-      {dropdownVisible && (
-        <View style={styles.dropdown}>
-          <Text style={styles.userName}>{user.name}</Text>
-          <Text style={styles.userEmail}>{user.email}</Text>
-          <TouchableOpacity style={styles.logoutButton} onPress={logout}>
-            <Text style={styles.logoutText}>Logout</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    </View>
   );
 };
 
@@ -60,14 +41,6 @@ const BottomTabNavigator = () => {
       initialRouteName="Menu"
       screenOptions={{
         headerShown: true,
-        // headerTransparent: true,
-        headerStyle: {
-          // elevation: 5, 
-          // shadowColor: '#000',
-          // shadowOffset: { width: 0, height: 2 },
-          borderBottomRightRadius: 20,
-          borderBottomLeftRadius: 20,
-        },
         headerRight: () => <AvatarDropdown />,
       }}
     >
@@ -143,7 +116,7 @@ const BottomTabNavigator = () => {
 
 const AppNavigator = () => {
   const { user, loading } = useContext(AuthContext); // Check if user is logged in
-
+  const navigation = useNavigation();
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -156,7 +129,21 @@ const AppNavigator = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {user ? (
+        <>
         <Stack.Screen name="Tabs" component={BottomTabNavigator} />
+        <Stack.Screen 
+          name="Profile" 
+          component={Profile}  
+          options={{
+            headerShown: true, 
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: 5 }}>
+                <Ionicons name="chevron-back" size={20} color="black" />
+              </TouchableOpacity>
+            ),
+          }}
+          />
+        </>
       ) : (
         <>
           <Stack.Screen name="Login" component={Login} />

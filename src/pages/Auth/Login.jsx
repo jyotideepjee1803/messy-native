@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image } from "react-native";
+import { View, Text, TouchableOpacity, Alert, StyleSheet, Image } from "react-native";
+import { TextInput } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../../context/AuthContext";
 import AxiosInstance from "../../axios/config";
@@ -46,7 +47,12 @@ const Login = () => {
           <>
             <TextInput
               style={styles.input}
+              mode="outlined"
+              label="Email"
+              borderColor="#ccc"
+              activeOutlineColor="#1E90FF"
               placeholder="Email"
+              placeholderTextColor="#888"
               value={values.email}
               onChangeText={handleChange("email")}
               onBlur={handleBlur("email")}
@@ -57,6 +63,11 @@ const Login = () => {
             <TextInput
               style={styles.input}
               placeholder="Password"
+              mode="outlined"
+              label="Password"
+              borderColor="#ccc"
+              activeOutlineColor="#1E90FF"
+              placeholderTextColor="#888"
               value={values.password}
               onChangeText={handleChange("password")}
               onBlur={handleBlur("password")}
@@ -99,9 +110,6 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 50,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
     paddingHorizontal: 15,
     marginBottom: 10,
     backgroundColor: '#f9f9f9',
