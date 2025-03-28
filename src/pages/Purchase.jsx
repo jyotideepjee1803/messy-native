@@ -164,7 +164,7 @@ const Purchase = ({navigation}) => {
       {loadingMenu || loadingCoupon ? (
         <ActivityIndicator size="large" color="#0000ff" style={{ flex: 1, justifyContent: "center" }} />
       ) : (!bought || (!coupon || ((coupon.taken===true && getDayDifference(currentDateTime, coupon.updatedAt) >=5) || coupon.taken===false)) ? (
-          <ScrollView contentContainerStyle={{ padding: 20 }}>
+          <ScrollView contentContainerStyle={{ padding: 20, backgroundColor: '#fff' }}>
           <View style={{ backgroundColor: "white", padding: 10, borderRadius: 10, elevation: 3 }}>
             <Text style={{ fontSize: 18, fontWeight: "bold", textAlign: "center", marginBottom: 10 }}>Meal Plan</Text>
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 5 }}>
@@ -223,7 +223,7 @@ const Purchase = ({navigation}) => {
             <Text style={{ fontSize: 16, fontWeight: "bold", textAlign: "right", marginTop: 10 }}>{`Total: ₹${total}`}</Text>
             <TouchableHighlight
               style={{
-                backgroundColor: total === 0 ? "gray" : "#f37251",
+                backgroundColor: total === 0 ? "gray" : "#1E90FF",
                 padding: 10,
                 borderRadius: 5,
                 marginTop: 10,
@@ -237,7 +237,7 @@ const Purchase = ({navigation}) => {
           </View>
         </ScrollView>
         ) : (
-          <View style={{flex: 1, justifyContent: 'center',alignItems: 'center'}}>
+          <View style={{flex: 1, justifyContent: 'center',alignItems: 'center',  backgroundColor: '#fff'}}>
             <Ionicons name="checkmark-circle-outline" size={100} color="green" />
             <Text style={{fontSize: 24, fontWeight: 'bold', color: 'green', marginTop: 10,}}>Coupon already bought!</Text>
           </View>

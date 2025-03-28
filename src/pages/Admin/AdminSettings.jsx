@@ -5,6 +5,7 @@ import { AuthContext } from '../../context/AuthContext'
 import AxiosInstance from '../../axios/config'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Accordion from '../../components/Accordion'
+import LinearGradient from 'react-native-linear-gradient'
 
 const AdminSettings = () => {
     const {user} = useContext(AuthContext);
@@ -68,7 +69,7 @@ const AdminSettings = () => {
                 {mealData.map((item, index) => (
                     <View key={index} style={styles.card}>
                         <Text style={styles.mealText}>{item.mealName.toUpperCase()}</Text>
-                        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+
                         <TouchableOpacity onPress={()=> setStartTimePicker({visible: true, index})}>
                             <TextInput
                             label="Start Time"
@@ -87,7 +88,6 @@ const AdminSettings = () => {
                             right={<TextInput.Icon icon="clock" />}
                             />
                         </TouchableOpacity>
-                        </View>
 
                         <TextInput
                             label={"Cost"}
