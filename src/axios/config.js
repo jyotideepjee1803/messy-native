@@ -2,8 +2,9 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import {BACKEND_URI} from "@env";
 
-const backendURI = "http://192.168.1.50:5000";
+const backendURI = BACKEND_URI;
 
 const AxiosInstance = axios.create({
   baseURL: backendURI,

@@ -6,6 +6,7 @@ import { AuthContext } from "../context/AuthContext";
 import Protected from "../common/Protected";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useFocusEffect } from "@react-navigation/native";
+import {Razorpay_API_KEY} from "@env";
 
 const Purchase = ({navigation}) => {
   const {user} = useContext(AuthContext);
@@ -135,17 +136,10 @@ const Purchase = ({navigation}) => {
       const res = await AxiosInstance.post("payments/initiate", {userId, amount: total, selected: selectedItems });
       const options = {
         description: 'Coupon Purchase',
-        image: 'https://i.imgur.com/3g7nmJC.png',
         currency: res.data.currency,
-        key: "rzp_test_hWcGMj2bhItndk",
+        key: Razorpay_API_KEY,
         order_id: res.data.id,
         amount: res.data.amount.toString(),
-        prefill: {
-          email: 'gaurav.kumar@example.com',
-          contact: '9191919191',
-          name: 'Gaurav Kumar'
-        },
-        theme: {color: '#53a20e'}
       };
       RazorpayCheckout.open(options).then((data) => {
         setBought(true);

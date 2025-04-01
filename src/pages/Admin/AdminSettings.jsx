@@ -1,15 +1,16 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Button, ScrollView, StyleSheet, View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
-import { TextInput } from 'react-native-paper'
-import { AuthContext } from '../../context/AuthContext'
-import AxiosInstance from '../../axios/config'
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-import Accordion from '../../components/Accordion'
-import LinearGradient from 'react-native-linear-gradient'
+import React, { useContext, useEffect, useState } from 'react';
+import { Button, ScrollView, StyleSheet, View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { TextInput } from 'react-native-paper';
+import { AuthContext } from '../../context/AuthContext';
+import AxiosInstance from '../../axios/config';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+
+const DAYS_ORDER = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 const AdminSettings = () => {
-    const {user} = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
 
+    const [activeTab, setActiveTab] = useState('Mess Timing'); // Default tab
     const [menuData, setMenuData] = useState([]);
     const [mealData, setMealData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -20,43 +21,44 @@ const AdminSettings = () => {
         fetchData();
     }, []);
 
-
     const fetchData = async () => {
         try {
             setLoading(true);
             const [menuResponse, mealResponse] = await Promise.all([
-                AxiosInstance.get("/days/getMenu"),
-                AxiosInstance.get("/meals/getMeals"),
+                AxiosInstance.get('/days/getMenu'),
+                AxiosInstance.get('/meals/getMeals'),
             ]);
-            setMenuData(menuResponse.data);
+            setMenuData(
+                menuResponse.data.sort((a, b) => DAYS_ORDER.indexOf(a.day) - DAYS_ORDER.indexOf(b.day))
+            );
             setMealData(mealResponse.data);
         } catch (error) {
-            console.log("Error fetching data", error);
+            console.log('Error fetching data', error);
         } finally {
-            setLoading(false); // Stop loading after both API calls complete
+            setLoading(false);
         }
     };
 
     const updateMenuData = async () => {
         try {
             await AxiosInstance.post('/days/setMenu', { menuData });
-            Alert.alert('Success',"Menu changes saved");
+            Alert.alert('Success', 'Menu changes saved');
         } catch (error) {
-            console.log("Error", "Failed to update menu");
+            console.log('Error', 'Failed to update menu');
         }
     };
 
     const updateMealData = async () => {
         try {
             await AxiosInstance.post('/meals/setMeals', { mealData });
-            Alert.alert("Meals updated successfully");
+            Alert.alert('Meals updated successfully');
         } catch (error) {
-            console.log("Error", "Failed to update meals");
+            console.log('Error', 'Failed to update meals');
         }
     };
 
     const formatTime = (date) => {
-        return date ? new Date(date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "--:--";
+        return date ? new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--';
     };
 
     if (loading) {
@@ -64,93 +66,110 @@ const AdminSettings = () => {
     }
 
     return user.isAdmin ? (
-        <ScrollView style={styles.container}>
-            <Accordion title="Mess Timing">
-                {mealData.map((item, index) => (
-                    <View key={index} style={styles.card}>
-                        <Text style={styles.mealText}>{item.mealName.toUpperCase()}</Text>
-
-                        <TouchableOpacity onPress={()=> setStartTimePicker({visible: true, index})}>
-                            <TextInput
-                            label="Start Time"
-                            mode='outlined'
-                            value={formatTime(item.startTime)}
-                            editable={false}
-                            right={<TextInput.Icon icon="clock" />}
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => setEndTimePicker({ visible: true, index })}>
-                            <TextInput
-                            label="End Time"
-                            mode='outlined'
-                            value={formatTime(item.endTime)}
-                            editable={false}
-                            right={<TextInput.Icon icon="clock" />}
-                            />
-                        </TouchableOpacity>
-
-                        <TextInput
-                            label={"Cost"}
-                            mode='outlined'
-                            value={String(item.cost)}
-                            keyboardType="numeric"
-                            onChangeText={(text) => {
-                                const newMeal = [...mealData];
-                                newMeal[index].cost = Number(text);
-                                setMealData(newMeal);
-                            }}
-                        />
-                    </View>
-                ))}
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.saveButton} onPress={updateMealData}>
-                        <Text style={styles.buttonText}>Save Meals</Text>
+        <View style={styles.container}>
+            {/* Tab Navigation */}
+            <View style={styles.tabContainer}>
+                {['Mess Timing', 'Mess Menu'].map((tab) => (
+                    <TouchableOpacity
+                        key={tab}
+                        style={[styles.tab, activeTab === tab && styles.activeTab]}
+                        onPress={() => setActiveTab(tab)}
+                    >
+                        <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>{tab}</Text>
                     </TouchableOpacity>
-                </View>
-            </Accordion>
-
-            <Accordion title="Mess Menu">
-                {menuData.map((menu, index) => (
-                    <View key={index} style={styles.card}>
-                        <Text style={styles.menuText}>{menu.day}</Text>
-                        <TextInput
-                            mode='outlined'
-                            label={'Breakfast'}
-                            value={menu.breakfast}
-                            onChangeText={(text) => {
-                                const newMenu = [...menuData];
-                                newMenu[index].breakfast = text;
-                                setMenuData(newMenu);
-                            }}
-                        />
-                        <TextInput
-                            mode='outlined'
-                            label={'Lunch'}
-                            value={menu.lunch}
-                            onChangeText={(text) => {
-                                const newMenu = [...menuData];
-                                newMenu[index].lunch = text;
-                                setMenuData(newMenu);
-                            }}
-                        />
-                        <TextInput
-                            mode='outlined'
-                            label={'Dinner'}
-                            value={menu.dinner}
-                            onChangeText={(text) => {
-                                const newMenu = [...menuData];
-                                newMenu[index].dinner = text;
-                                setMenuData(newMenu);
-                            }}
-                        />
-                    </View>
                 ))}
-                <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.saveButton} onPress={updateMenuData}>
-                    <Text style={styles.buttonText}>Save Menu</Text>
-                </TouchableOpacity>
             </View>
-            </Accordion>
+
+            <ScrollView style={styles.contentContainer}>
+                {activeTab === 'Mess Timing' ? (
+                    <>
+                        {mealData.map((item, index) => (
+                            <View key={index} style={styles.card}>
+                                <Text style={styles.mealText}>{item.mealName.toUpperCase()}</Text>
+
+                                <TouchableOpacity onPress={() => setStartTimePicker({ visible: true, index })}>
+                                    <TextInput
+                                        label="Start Time"
+                                        mode="outlined"
+                                        value={formatTime(item.startTime)}
+                                        editable={false}
+                                        right={<TextInput.Icon icon="clock" />}
+                                    />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => setEndTimePicker({ visible: true, index })}>
+                                    <TextInput
+                                        label="End Time"
+                                        mode="outlined"
+                                        value={formatTime(item.endTime)}
+                                        editable={false}
+                                        right={<TextInput.Icon icon="clock" />}
+                                    />
+                                </TouchableOpacity>
+
+                                <TextInput
+                                    label={'Cost'}
+                                    mode="outlined"
+                                    value={String(item.cost)}
+                                    keyboardType="numeric"
+                                    onChangeText={(text) => {
+                                        const newMeal = [...mealData];
+                                        newMeal[index].cost = Number(text);
+                                        setMealData(newMeal);
+                                    }}
+                                />
+                            </View>
+                        ))}
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity style={styles.saveButton} onPress={updateMealData}>
+                                <Text style={styles.buttonText}>Save Meals</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </>
+                ) : (
+                    <>
+                        {menuData.map((menu, index) => (
+                            <View key={index} style={styles.card}>
+                                <Text style={styles.menuText}>{menu.day}</Text>
+                                <TextInput
+                                    mode="outlined"
+                                    label={'Breakfast'}
+                                    value={menu.breakfast}
+                                    onChangeText={(text) => {
+                                        const newMenu = [...menuData];
+                                        newMenu[index].breakfast = text;
+                                        setMenuData(newMenu);
+                                    }}
+                                />
+                                <TextInput
+                                    mode="outlined"
+                                    label={'Lunch'}
+                                    value={menu.lunch}
+                                    onChangeText={(text) => {
+                                        const newMenu = [...menuData];
+                                        newMenu[index].lunch = text;
+                                        setMenuData(newMenu);
+                                    }}
+                                />
+                                <TextInput
+                                    mode="outlined"
+                                    label={'Dinner'}
+                                    value={menu.dinner}
+                                    onChangeText={(text) => {
+                                        const newMenu = [...menuData];
+                                        newMenu[index].dinner = text;
+                                        setMenuData(newMenu);
+                                    }}
+                                />
+                            </View>
+                        ))}
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity style={styles.saveButton} onPress={updateMenuData}>
+                                <Text style={styles.buttonText}>Save Menu</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </>
+                )}
+            </ScrollView>
 
             <DateTimePickerModal
                 isVisible={startTimePicker.visible}
@@ -177,49 +196,26 @@ const AdminSettings = () => {
                 }}
                 onCancel={() => setEndTimePicker({ visible: false, index: null })}
             />
-        
-        </ScrollView>
-        ) : (
-            <Text>Not Admin</Text>
-        );
-    };
+        </View>
+    ) : (
+        <Text>Not Admin</Text>
+    );
+};
 
 const styles = StyleSheet.create({
-    container: { padding: 20, backgroundColor: '#fff' },
-    header: { fontSize: 24, fontWeight: 'bold', marginBottom: 10 },
+    container: { flex: 1, backgroundColor: '#fff', paddingBottom:30},
+    tabContainer: { flexDirection: 'row', justifyContent: 'space-around', backgroundColor: '#fff', padding: 10, marginBottom: 10},
+    tab: { padding: 10, flex: 1, alignItems: 'center' },
+    activeTab: { borderBottomWidth: 3, borderBottomColor: '#1E90FF' },
+    tabText: { fontSize: 16, },
+    activeTabText: { color: '#1E90FF', fontWeight: 'bold' },
+    contentContainer: { padding: 20 },
     card: { padding: 10, marginVertical: 5, backgroundColor: '#f8f8f8', borderRadius: 8, gap: 5 },
     mealText: { fontSize: 18, fontWeight: 'bold' },
-    menuText: { fontSize: 18, fontWeight: 'bold', marginBottom:10 },
-    timeContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 10,
-        marginVertical: 5,
-    },
-    timeText: {
-        fontSize: 16,
-    },
-    loader: { flex: 1, justifyContent: "center", alignItems: "center", marginTop: 20 },
-    buttonContainer: {
-        marginVertical: 20,
-        paddingVertical: 10,
-        alignItems: 'center', // Center horizontally
-    },
-    
-    saveButton: {
-        backgroundColor: '#1E90FF',
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        borderRadius: 8,
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '80%',
-    }, 
-    buttonText: {
-        color: 'white',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
+    menuText: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
+    buttonContainer: { alignItems: 'center', marginVertical: 20 },
+    saveButton: { backgroundColor: '#1E90FF', padding: 12, borderRadius: 8, width: '80%', alignItems: 'center' },
+    buttonText: { color: 'white', fontSize: 18, fontWeight: 'bold' },
 });
 
-export default AdminSettings
+export default AdminSettings;

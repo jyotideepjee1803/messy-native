@@ -75,7 +75,7 @@ const MenuPage = ({ navigation }) => {
                   const endTime = new Date(item.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                   return (
                     <View key={index} style={styles.mealCard}>
-                      <Text style={styles.mealTitle}>{item.mealName}</Text>
+                      <Text style={styles.mealTitle}>{item.mealName.charAt(0).toUpperCase() + item.mealName.slice(1)}</Text>
                       <Text style={styles.mealTime}>{startTime} - {endTime}</Text>
                       <Text style={styles.mealCost}>Cost: ₹{item.cost}</Text>
                     </View>
