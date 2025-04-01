@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useContext, useEffect, useState, useRef, useCallback } from "react";
 import { 
   View, Text, ScrollView, ActivityIndicator, StyleSheet, TouchableOpacity 
 } from "react-native";
@@ -6,6 +6,7 @@ import { Card, DataTable } from "react-native-paper";
 import { AuthContext } from "../context/AuthContext";
 import AxiosInstance from "../axios/config";
 import Protected from "../common/Protected";
+import { useFocusEffect } from "@react-navigation/native";
 
 const MenuPage = ({ navigation }) => {
   const { user } = useContext(AuthContext);
@@ -41,13 +42,16 @@ const MenuPage = ({ navigation }) => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      await fetchMenuData();
-      await fetchMealData();
-    };
-    fetchData();
-  }, []);
+  
+  useFocusEffect(
+      useCallback(() => {
+        const fetchData = async () => {
+          await fetchMenuData();
+          await fetchMealData();
+        };
+        fetchData();
+      }, [])
+  );
 
   const paginatedMenuData = menuData.slice(
     page * itemsPerPage,

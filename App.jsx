@@ -14,6 +14,7 @@ import MealCount from './src/pages/Admin/MealCount';
 import SignUp from './src/pages/Auth/SignUp';
 import ScanCoupon from './src/pages/Admin/ScanCoupon';
 import Profile from './src/pages/Profile';
+import NoticeScreen from './src/pages/Notice';
 
 
 const Tab = createBottomTabNavigator();
@@ -88,16 +89,6 @@ const BottomTabNavigator = () => {
         />
 
         <Tab.Screen 
-          name="Inventory" 
-          component={MealCount} 
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="bag-outline" size={size} color={color} />
-            ),
-          }} 
-        />
-
-        <Tab.Screen 
           name="Scan" 
           component={ScanCoupon} 
           options={{
@@ -106,10 +97,26 @@ const BottomTabNavigator = () => {
             ),
           }} 
         />
-        </>
 
-        
+        <Tab.Screen 
+          name="Inventory" 
+          component={MealCount} 
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="bag-outline" size={size} color={color} />
+            ),
+          }} 
+        />
+        </> 
       )}
+       <Tab.Screen 
+        name="Notice" 
+        component={NoticeScreen} 
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="mail-open-outline" size={size} color={color} />
+          ),
+        }} />
     </Tab.Navigator>
   );
 };

@@ -1,7 +1,5 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
-import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
 import {BACKEND_URI} from "@env";
 
 const backendURI = BACKEND_URI;
@@ -11,7 +9,7 @@ const AxiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 10000, // Optional: Set a timeout of 10 seconds
+  timeout: 10000,
 });
 
 AxiosInstance.interceptors.request.use(

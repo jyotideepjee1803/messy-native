@@ -1,8 +1,9 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { View, Text, ScrollView, ActivityIndicator, StyleSheet, FlatList } from "react-native";
 import AxiosInstance from "../../axios/config";
 import { Card, DataTable } from "react-native-paper";
 import Protected from "../../common/Protected";
+import { useFocusEffect } from "@react-navigation/native";
 
 const MealCount = ({navigation}) => {
 
@@ -25,9 +26,11 @@ const MealCount = ({navigation}) => {
     }
   };
 
-  useEffect(() => {
-    fetchMealCount();
-  }, []);
+  useFocusEffect(
+      useCallback(() => {
+        fetchMealCount();
+      }, [])
+  );
 
   return (
     <Protected navigation={navigation}>

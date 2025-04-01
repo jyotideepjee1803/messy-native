@@ -1,9 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Button, ScrollView, StyleSheet, View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { AuthContext } from '../../context/AuthContext';
 import AxiosInstance from '../../axios/config';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { useFocusEffect } from '@react-navigation/native';
 
 const DAYS_ORDER = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -17,10 +18,13 @@ const AdminSettings = () => {
     const [startTimePicker, setStartTimePicker] = useState({ visible: false, index: null });
     const [endTimePicker, setEndTimePicker] = useState({ visible: false, index: null });
 
-    useEffect(() => {
-        fetchData();
-    }, []);
 
+    useFocusEffect(
+        useCallback(() => {
+            fetchData();
+        }, [])
+    );
+    
     const fetchData = async () => {
         try {
             setLoading(true);
@@ -204,6 +208,7 @@ const AdminSettings = () => {
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#fff', paddingBottom:30},
+    loader: { flex: 1, justifyContent: "center", alignItems: "center", marginTop: 20 },
     tabContainer: { flexDirection: 'row', justifyContent: 'space-around', backgroundColor: '#fff', padding: 10, marginBottom: 10},
     tab: { padding: 10, flex: 1, alignItems: 'center' },
     activeTab: { borderBottomWidth: 3, borderBottomColor: '#1E90FF' },
