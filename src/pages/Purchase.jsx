@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo, useCallback, useContext } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView, TouchableHighlight } from "react-native";
-import AxiosInstance from "../axios/config";
-import RazorpayCheckout from "react-native-razorpay";
-import { AuthContext } from "../context/AuthContext";
-import Protected from "../common/Protected";
+import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView, TouchableHighlight, StyleSheet } from "react-native";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useFocusEffect } from "@react-navigation/native";
+import RazorpayCheckout from "react-native-razorpay";
+import AxiosInstance from "../axios/config";
+import { AuthContext } from "../context/AuthContext";
+import Protected from "../common/Protected";
 import {Razorpay_API_KEY} from "@env";
 
 const Purchase = ({navigation}) => {
@@ -39,12 +39,6 @@ const Purchase = ({navigation}) => {
     try {
       setLoadingMenu(true);
       const response = await AxiosInstance.get("days/getMenu");
-      // await axios.get("http://192.168.1.67:5000/days/getMenu", {
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     Authorization: `Bearer ${user.token}`,
-      //   },
-      // });
       let data = response.data;
       data.sort((a, b) => sortIdx[a.day] - sortIdx[b.day]);
       setMenuData(data);
@@ -58,13 +52,6 @@ const Purchase = ({navigation}) => {
   const fetchMealCosts = useCallback(async () => {
     try {
       const response = await AxiosInstance.get("/meals/getMeals");
-      // await axios.get("http://192.168.1.67:5000/meals/getMeals", {
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     Authorization: `Bearer ${user.token}`,
-      //   },
-      // });
-
       const breakfastCost = response.data.find((meal) => meal.mealName === "breakfast").cost;
       const lunchCost = response.data.find((meal) => meal.mealName === "lunch").cost;
       const dinnerCost = response.data.find((meal) => meal.mealName === "dinner").cost;
@@ -78,7 +65,6 @@ const Purchase = ({navigation}) => {
     try{
       setLoadingCoupon(true);
       const response = await AxiosInstance.get(`/coupons?userId=${userId}`);
-      // console.log(response.data.coupons);
       if(response.data.coupons) setBought(true);
       setCoupon(response.data.coupons);
     }catch(error){
@@ -155,90 +141,76 @@ const Purchase = ({navigation}) => {
 
   return (
     <Protected navigation={navigation}>
-      {loadingMenu || loadingCoupon ? (
-        <ActivityIndicator size="large" color="#0000ff" style={{ flex: 1, justifyContent: "center" }} />
-      ) : (!bought || (!coupon || ((coupon.taken===true && getDayDifference(currentDateTime, coupon.updatedAt) >=5) || coupon.taken===false)) ? (
-          <ScrollView contentContainerStyle={{ padding: 20, backgroundColor: '#fff' }}>
-          <View style={{ backgroundColor: "white", padding: 10, borderRadius: 10, elevation: 3 }}>
-            <Text style={{ fontSize: 18, fontWeight: "bold", textAlign: "center", marginBottom: 10 }}>Meal Plan</Text>
-            <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 5 }}>
-              <Text style={{ flex: 1, fontWeight: "bold" }}>Day</Text>
-              <Text style={{ flex: 1, fontWeight: "bold" }}>Breakfast</Text>
-              <Text style={{ flex: 1, fontWeight: "bold" }}>Lunch</Text>
-              <Text style={{ flex: 1, fontWeight: "bold" }}>Dinner</Text>
+      {(!bought || (!coupon || ((coupon.taken===true && getDayDifference(currentDateTime, coupon.updatedAt) >=5) || coupon.taken===false)) ? (
+          <ScrollView contentContainerStyle={styles.container}>
+              {loadingMenu || loadingCoupon ? (
+                <ActivityIndicator size="large" color="#007AFF" style={styles.loader} />
+              ) : (
+                <View style={styles.card}>
+                  <Text style={styles.title}>Meal Plan</Text>
+                  <View style={styles.headerRow}>
+                    <Text style={styles.headerText}>Day</Text>
+                    <Text style={styles.headerText}>Breakfast</Text>
+                    <Text style={styles.headerText}>Lunch</Text>
+                    <Text style={styles.headerText}>Dinner</Text>
+                  </View>
+                  {menuData.map((rowData, index) => (
+                    <View key={index} style={styles.row}>
+                      <Text style={styles.cell}>{rowData.day}</Text>
+                      {["breakfast", "lunch", "dinner"].map((meal, mealIndex) => (
+                        <TouchableOpacity
+                          key={mealIndex}
+                          style={[
+                            styles.mealCell,
+                            selectedItems[mealIndex][index] && styles.selectedMeal,
+                          ]}
+                          onPress={() => handleCheckboxChange(mealIndex, index)}
+                        >
+                          <Text style={styles.cellText}>{rowData[meal]}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  ))}
+                  <Text style={styles.totalText}>{`Total: ₹${total}`}</Text>
+                  <TouchableHighlight
+                    style={[styles.buyButton, total === 0 && styles.disabledButton]}
+                    disabled={total === 0}
+                    onPress={initiatePayment}
+                  >
+                    <Text style={styles.buyButtonText}>Buy Now</Text>
+                  </TouchableHighlight>
+                </View>
+              )}
+          </ScrollView>
+          ) : (
+            <View style={styles.successContainer}>
+              <Ionicons name="checkmark-circle-outline" size={100} color="green" />
+              <Text style={styles.successText}>Coupon already bought!</Text>
             </View>
-            {menuData.map((rowData, index) => (
-              <View key={index} style={{ flexDirection: "row", justifyContent: "space-between", marginVertical: 5 }}>
-                <Text style={{ flex: 1 }}>{rowData.day}</Text>
-                {/* Breakfast Cell */}
-                <TouchableOpacity
-                  style={{
-                    flex: 1,
-                    backgroundColor: selectedItems[0][index] ? "#ceface" : "white",
-                    padding: 5,
-                    borderRadius: 5,
-                    borderWidth: 1,
-                    borderColor: "#ccc",
-                  }}
-                  onPress={() => handleCheckboxChange(0, index)}
-                >
-                  <Text style={{ textAlign: "center" }}>{rowData.breakfast}</Text>
-                </TouchableOpacity>
-                {/* Lunch Cell */}
-                <TouchableOpacity
-                  style={{
-                    flex: 1,
-                    backgroundColor: selectedItems[1][index] ? "#ceface" : "white",
-                    padding: 5,
-                    borderRadius: 5,
-                    borderWidth: 1,
-                    borderColor: "#ccc",
-                  }}
-                  onPress={() => handleCheckboxChange(1, index)}
-                >
-                  <Text style={{ textAlign: "center" }}>{rowData.lunch}</Text>
-                </TouchableOpacity>
-                {/* Dinner Cell */}
-                <TouchableOpacity
-                  style={{
-                    flex: 1,
-                    backgroundColor: selectedItems[2][index] ? "#ceface" : "white",
-                    padding: 5,
-                    borderRadius: 5,
-                    borderWidth: 1,
-                    borderColor: "#ccc",
-                  }}
-                  onPress={() => handleCheckboxChange(2, index)}
-                >
-                  <Text style={{ textAlign: "center" }}>{rowData.dinner}</Text>
-                </TouchableOpacity>
-              </View>
-            ))}
-            <Text style={{ fontSize: 16, fontWeight: "bold", textAlign: "right", marginTop: 10 }}>{`Total: ₹${total}`}</Text>
-            <TouchableHighlight
-              style={{
-                backgroundColor: total === 0 ? "gray" : "#1E90FF",
-                padding: 10,
-                borderRadius: 5,
-                marginTop: 10,
-                alignItems: "center",
-              }}
-              disabled={total === 0}
-              onPress={initiatePayment}
-            >
-              <Text style={{ color: "white", fontSize: 16 }}>Buy Now</Text>
-            </TouchableHighlight>
-          </View>
-        </ScrollView>
-        ) : (
-          <View style={{flex: 1, justifyContent: 'center',alignItems: 'center',  backgroundColor: '#fff'}}>
-            <Ionicons name="checkmark-circle-outline" size={100} color="green" />
-            <Text style={{fontSize: 24, fontWeight: 'bold', color: 'green', marginTop: 10,}}>Coupon already bought!</Text>
-          </View>
           )
-        )}
+      )}
     </Protected>
   );
 };
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+  loader: { flex: 1, justifyContent: "center", marginTop: 20 },
+  card: { backgroundColor: "white", padding: 10, borderRadius: 10, elevation: 3 },
+  title: { fontSize: 18, fontWeight: "bold", textAlign: "center", marginBottom: 10 },
+  headerRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 5 },
+  headerText: { flex: 1, fontWeight: "bold" },
+  row: { flexDirection: "row", justifyContent: "space-between", marginVertical: 5 },
+  cell: { flex: 1 },
+  mealCell: { flex: 1, padding: 5, borderRadius: 5, borderWidth: 1, borderColor: "#ccc" },
+  selectedMeal: { backgroundColor: "#ceface" },
+  cellText: { textAlign: "center" },
+  totalText: { fontSize: 16, fontWeight: "bold", textAlign: "right", marginTop: 10 },
+  buyButton: { backgroundColor: "#1E90FF", padding: 10, borderRadius: 5, marginTop: 10, alignItems: "center" },
+  disabledButton: { backgroundColor: "gray" },
+  buyButtonText: { color: "white", fontSize: 16 },
+  successContainer: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#fff" },
+  successText: { fontSize: 24, fontWeight: "bold", color: "green", marginTop: 10 },
+});
 
 export default Purchase;

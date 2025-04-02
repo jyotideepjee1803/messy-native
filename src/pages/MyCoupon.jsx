@@ -62,7 +62,7 @@ const MyCouponPage = ({navigation}) => {
     <Protected navigation={navigation}>
       <SafeAreaView style={styles.container}>
         {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" style={styles.loader}/>
+          <ActivityIndicator size="large" color="#007AFF" style={styles.loader}/>
         ) : (
               <>
               <Text style={styles.heading}>Tap on a meal to show the QR Code</Text>

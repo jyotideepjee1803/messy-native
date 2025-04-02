@@ -3,10 +3,12 @@ import {
   View, Text, ScrollView, ActivityIndicator, StyleSheet, TouchableOpacity 
 } from "react-native";
 import { Card, DataTable } from "react-native-paper";
+import { useFocusEffect } from "@react-navigation/native";
 import { AuthContext } from "../context/AuthContext";
 import AxiosInstance from "../axios/config";
 import Protected from "../common/Protected";
-import { useFocusEffect } from "@react-navigation/native";
+
+const MEALS_ORDER = ["breakfast", "lunch", "dinner"];
 
 const MenuPage = ({ navigation }) => {
   const { user } = useContext(AuthContext);
@@ -34,7 +36,9 @@ const MenuPage = ({ navigation }) => {
     setLoadingMeal(true);
     try {
       const response = await AxiosInstance.get("/meals/getMeals");
-      setMealData(response.data);
+      setMealData(
+        response.data.sort((a, b) => MEALS_ORDER.indexOf(a.mealName.toLowerCase()) - MEALS_ORDER.indexOf(b.mealName.toLowerCase()))
+      );
     } catch (error) {
       console.log("Error fetching meal data", error);
     } finally {

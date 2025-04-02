@@ -7,6 +7,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useFocusEffect } from '@react-navigation/native';
 
 const DAYS_ORDER = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const MEALS_ORDER = ["breakfast", "lunch", "dinner"];
 
 const AdminSettings = () => {
     const { user } = useContext(AuthContext);
@@ -35,7 +36,10 @@ const AdminSettings = () => {
             setMenuData(
                 menuResponse.data.sort((a, b) => DAYS_ORDER.indexOf(a.day) - DAYS_ORDER.indexOf(b.day))
             );
-            setMealData(mealResponse.data);
+            setMealData(
+                mealResponse.data.sort((a, b) => MEALS_ORDER.indexOf(a.mealName.toLowerCase()) - MEALS_ORDER.indexOf(b.mealName.toLowerCase()))
+            );
+            
         } catch (error) {
             console.log('Error fetching data', error);
         } finally {
@@ -66,7 +70,7 @@ const AdminSettings = () => {
     };
 
     if (loading) {
-        return <ActivityIndicator size="large" color="blue" style={styles.loader} />;
+        return <ActivityIndicator size="large" color="#007AFF" style={styles.loader} />;
     }
 
     return user.isAdmin ? (

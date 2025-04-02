@@ -36,7 +36,7 @@ const MealCount = ({navigation}) => {
     <Protected navigation={navigation}>
       <ScrollView contentContainerStyle={styles.container}>
         {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" style={styles.loader}/>
+          <ActivityIndicator size="large" color="#007AFF" style={styles.loader}/>
         ) : (
               <DataTable style={styles.tableContainer}>
                   <DataTable.Header style={styles.tableHeader}>

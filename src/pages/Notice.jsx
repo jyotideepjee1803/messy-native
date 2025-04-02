@@ -1,9 +1,10 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert, TextInput, Modal, ScrollView } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert, Modal } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import AxiosInstance from "../axios/config";
 import { AuthContext } from "../context/AuthContext";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { useFocusEffect } from "@react-navigation/native";
+import { TextInput } from "react-native-paper";
 
 const NoticeScreen = () => {
     const { user } = useContext(AuthContext);
@@ -125,7 +126,7 @@ const NoticeScreen = () => {
 
                 {item.body.length > 100 && (
                     <TouchableOpacity onPress={() => toggleExpand(item._id)}>
-                        <Text style={{ color: "blue", fontSize: 14 }}>
+                        <Text style={{ color: "#007AFF", fontSize: 14 }}>
                             {isExpanded ? "Show less" : "Read more"}
                         </Text>
                     </TouchableOpacity>
@@ -137,7 +138,7 @@ const NoticeScreen = () => {
                             <Icon name="delete" size={22} color="red" />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => openEditModal(item)}>
-                            <Icon name="edit" size={22} color="blue" />
+                            <Icon name="edit" size={22} color="#007AFF" />
                         </TouchableOpacity>
                     </View>
                 )}
@@ -149,7 +150,7 @@ const NoticeScreen = () => {
         <View style={{ flex: 1, padding: 20, backgroundColor: "#fff" }}>
 
             {loading ? (
-                <ActivityIndicator size="large" color="blue" style={{ flex: 1, justifyContent: "center", alignItems: "center", marginTop: 20 }}/>
+                <ActivityIndicator size="large" color="#007AFF" style={{ flex: 1, justifyContent: "center", alignItems: "center", marginTop: 20 }}/>
             ) : (
                 <FlatList
                     data={notices}
@@ -163,7 +164,7 @@ const NoticeScreen = () => {
                 <TouchableOpacity
                     onPress={openAddModal}
                     style={{
-                    backgroundColor: "blue",
+                    backgroundColor: "#007AFF",
                         width: 60,
                         height: 60,
                         borderRadius: 30,
@@ -185,17 +186,30 @@ const NoticeScreen = () => {
                         <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 10 }}>Edit Notice</Text>
 
                         <TextInput
+                            mode="outlined"
+                            label={"Subject"}
                             value={subject}
                             onChangeText={setSubject}
+                            borderColor="#ccc"
+                            activeOutlineColor="#1E90FF"
+                            placeholderTextColor="#888"
                             placeholder="Subject"
-                            style={{ borderWidth: 1, borderColor: "gray", padding: 10, marginBottom: 10, borderRadius: 5 }}
+                            style={{ width: '100%',
+                                height: 50,
+                                paddingHorizontal: 10,
+                                marginVertical: 10, }}
                         />
                         <TextInput
+                            mode="outlined"
+                            label={"Body"}
                             value={body}
                             onChangeText={setBody}
+                            borderColor="#ccc"
+                            activeOutlineColor="#1E90FF"
+                            placeholderTextColor="#888"
                             placeholder="Body"
                             multiline
-                            style={{ borderWidth: 1, borderColor: "gray", padding: 10, borderRadius: 5, height: 80 }}
+                            style={{ paddingHorizontal: 10, height: 80 }}
                         />
 
                         <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
@@ -203,7 +217,7 @@ const NoticeScreen = () => {
                                 <Text style={{ color: "gray" }}>Cancel</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={editNotice} style={{ padding: 10 }}>
-                                <Text style={{ color: "blue" }}>Save</Text>
+                                <Text style={{ color: "#007AFF" }}>Save</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -217,26 +231,40 @@ const NoticeScreen = () => {
                         <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 10 }}>Add Notice</Text>
 
                         <TextInput
+                            mode="outlined"
+                            label={"Subject"}
                             value={subject}
                             onChangeText={setSubject}
+                            borderColor="#ccc"
+                            activeOutlineColor="#1E90FF"
+                            placeholderTextColor="#888"
                             placeholder="Subject"
-                            style={{ borderWidth: 1, borderColor: "gray", padding: 10, marginBottom: 10, borderRadius: 5 }}
+                            style={{ width: '100%',
+                                height: 50,
+                                paddingHorizontal: 10,
+                                marginVertical: 10
+                            }}
                         />
                         <TextInput
+                            mode="outlined"
+                            label={"Body"}
                             value={body}
                             onChangeText={setBody}
+                            borderColor="#ccc"
+                            activeOutlineColor="#1E90FF"
+                            placeholderTextColor="#888"
                             placeholder="Body"
                             multiline
-                            style={{ borderWidth: 1, borderColor: "gray", padding: 10, borderRadius: 5, height: 80 }}
+                            style={{paddingHorizontal: 10, height: 80 }}
                         />
 
                         <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
-                            <TouchableOpacity onPress={addNotice} style={{ padding: 10}}>
-                                <Text style={{ color: "blue" }}>Add</Text>
-                            </TouchableOpacity>
-
                             <TouchableOpacity onPress={() => setAddModalVisible(false)}  style={{ padding: 10 }}>
                                 <Text style={{ color: "gray" }}>Cancel</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity onPress={addNotice} style={{ padding: 10}}>
+                                <Text style={{ color: "#007AFF" }}>Add</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

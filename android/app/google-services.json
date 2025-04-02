@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "428685911163",
+    "project_id": "messyapp-3508f",
+    "storage_bucket": "messyapp-3508f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:428685911163:android:7a44a6eba8bc1c8b84aede",
+        "android_client_info": {
+          "package_name": "com.messyapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzcsW_ovESJooE8bzIeCZSGWCLf_bbD1c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

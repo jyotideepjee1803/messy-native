@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image } from "react-native";
+import { View, Text, TouchableOpacity, Alert, StyleSheet, Image } from "react-native";
+import { TextInput } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../../context/AuthContext";
 import AxiosInstance from "../../axios/config";
@@ -59,15 +60,26 @@ const SignUp = () => {
           <>
             <TextInput
               style={styles.input}
+              mode="outlined"
+              label="First Name"
+              borderColor="#ccc"
+              activeOutlineColor="#1E90FF"
+              placeholderTextColor="#888"
               placeholder="First Name"
               value={values.firstName}
               onChangeText={handleChange("firstName")}
               onBlur={handleBlur("firstName")}
+              required
             />
             {touched.firstName && errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
 
             <TextInput
               style={styles.input}
+              mode="outlined"
+              label="Last Name"
+              borderColor="#ccc"
+              activeOutlineColor="#1E90FF"
+              placeholderTextColor="#888"
               placeholder="Last Name (Optional)"
               value={values.lastName}
               onChangeText={handleChange("lastName")}
@@ -76,6 +88,11 @@ const SignUp = () => {
 
             <TextInput
               style={styles.input}
+              mode="outlined"
+              label="Email"
+              borderColor="#ccc"
+              activeOutlineColor="#1E90FF"
+              placeholderTextColor="#888"
               placeholder="Email"
               value={values.email}
               onChangeText={handleChange("email")}
@@ -87,6 +104,11 @@ const SignUp = () => {
 
             <TextInput
               style={styles.input}
+              mode="outlined"
+              label="Password"
+              borderColor="#ccc"
+              activeOutlineColor="#1E90FF"
+              placeholderTextColor="#888"
               placeholder="Password"
               value={values.password}
               onChangeText={handleChange("password")}
@@ -97,6 +119,11 @@ const SignUp = () => {
 
             <TextInput
               style={styles.input}
+              mode="outlined"
+              label="Confirm Password"
+              borderColor="#ccc"
+              activeOutlineColor="#1E90FF"
+              placeholderTextColor="#888"
               placeholder="Confirm Password"
               value={values.confirmPassword}
               onChangeText={handleChange("confirmPassword")}
@@ -141,9 +168,6 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 50,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
     paddingHorizontal: 15,
     marginBottom: 10,
     backgroundColor: '#f9f9f9',
