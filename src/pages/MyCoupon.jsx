@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useState } from "react";
 import { View, Text, ScrollView, ActivityIndicator, StyleSheet, TouchableOpacity, Modal, SafeAreaView } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import AxiosInstance from "../axios/config";
-import { Card, DataTable } from "react-native-paper";
+import { DataTable } from "react-native-paper";
 import { AuthContext } from "../context/AuthContext";
 import Protected from "../common/Protected";
 import { useFocusEffect } from "@react-navigation/native";
@@ -18,6 +18,7 @@ const MyCouponPage = ({navigation}) => {
   const [loading, setLoading] = useState(false);
   const [qrVisible, setQrVisible] = useState(false);
   const [selectedMeal, setSelectedMeal] = useState(null);
+  const [activeTab, setActiveTab] = useState(0); // 0: Current Week, 1: Next Week
 
   const fetchCouponData = async () => {
     setLoading(true);
@@ -30,14 +31,7 @@ const MyCouponPage = ({navigation}) => {
         setMenuData(sortedMenu);
         
         const response = await AxiosInstance.get(`/coupons?userId=${userId}`);
-        // await axios.get(`http://192.168.1.67:5000/coupons?userId=${userId}`, {
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //     Authorization: `Bearer ${user.token}`,
-        //   },
-        // });
-        console.log(response.data);
-        setCouponData(response.data.coupons);
+        setCouponData(response.data.coupons.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))); // Coupons sorted in increasing order of createdAt
     } catch (error) {
       console.log("Error fetching coupon data", error);
     } finally {
@@ -58,15 +52,35 @@ const MyCouponPage = ({navigation}) => {
     setQrVisible(true);
   };
 
+  const selectedCoupon = couponData[activeTab];
+
   return (
     <Protected navigation={navigation}>
       <SafeAreaView style={styles.container}>
         {loading ? (
           <ActivityIndicator size="large" color="#007AFF" style={styles.loader}/>
         ) : (
+          <>
+            {/* Tab Switcher */}
+            <View style={styles.tabContainer}>
+              <TouchableOpacity
+                style={[styles.tab, activeTab === 0 && styles.activeTab]}
+                onPress={() => setActiveTab(0)}
+              >
+                <Text style={[styles.tabText, activeTab === 0 && styles.activeTabText]}>Current Week</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.tab, activeTab === 1 && styles.activeTab]}
+                onPress={() => setActiveTab(1)}
+              >
+                <Text style={[styles.tabText, activeTab === 1 && styles.activeTabText]}>Next Week</Text>
+              </TouchableOpacity>
+            </View>
+
+            {selectedCoupon ? (
               <>
-              <Text style={styles.heading}>Tap on a meal to show the QR Code</Text>
-              <DataTable style={styles.tableContainer}>
+                <Text style={styles.heading}>Tap on a meal to show the QR Code</Text>
+                <DataTable style={styles.tableContainer}>
                   <DataTable.Header style={styles.tableHeader}>
                       <DataTable.Title>Day</DataTable.Title>
                       <DataTable.Title>Breakfast</DataTable.Title>
@@ -74,14 +88,12 @@ const MyCouponPage = ({navigation}) => {
                       <DataTable.Title>Dinner</DataTable.Title>
                   </DataTable.Header>
 
-                  {couponData?.length > 0 ? (
-                  <>
                   {menuData.map((row, dayIndex) => (
                       <DataTable.Row key={dayIndex}>
                           <DataTable.Cell>{row.day}</DataTable.Cell>
                           {/* Breakfast */}
                           <DataTable.Cell>
-                            {couponData[0].week[0][dayIndex] ? (
+                            {selectedCoupon.week[0][dayIndex] ? (
                               <TouchableOpacity onPress={() => handleShowQR(dayIndex, 0)}>
                                 <Text style={styles.greenCell}>{row.breakfast}</Text>
                               </TouchableOpacity>
@@ -92,7 +104,7 @@ const MyCouponPage = ({navigation}) => {
 
                           {/* Lunch */}
                           <DataTable.Cell>
-                            {couponData[0].week[1][dayIndex] ? (
+                            {selectedCoupon.week[1][dayIndex] ? (
                               <TouchableOpacity onPress={() => handleShowQR(dayIndex, 1)}>
                                 <Text style={styles.greenCell}>{row.lunch}</Text>
                               </TouchableOpacity>
@@ -103,7 +115,7 @@ const MyCouponPage = ({navigation}) => {
 
                           {/* Dinner */}
                           <DataTable.Cell>
-                            {couponData[0].week[2][dayIndex] ? (
+                            {selectedCoupon.week[2][dayIndex] ? (
                               <TouchableOpacity onPress={() => handleShowQR(dayIndex, 2)}>
                                 <Text style={styles.greenCell}>{row.dinner}</Text>
                               </TouchableOpacity>
@@ -112,15 +124,15 @@ const MyCouponPage = ({navigation}) => {
                             )}
                           </DataTable.Cell>
                       </DataTable.Row>
-                      ))}
-                      </>
-                  ) : (
-                  <DataTable.Row>
-                      <DataTable.Cell>No coupons available</DataTable.Cell>
-                  </DataTable.Row>
-                  )}
-              </DataTable>
-            </>
+                  ))}
+                </DataTable>
+              </>
+            ) : (
+              <Text style={styles.noCouponText}>
+                {activeTab === 0 ? "No valid coupon for the current week" : "No valid coupon for the next week"}
+              </Text>
+            )}
+          </>
         )}
 
         <Modal visible={qrVisible} transparent={true} onRequestClose={() => setQrVisible(false)} animationType="slide">
@@ -152,11 +164,17 @@ const styles = StyleSheet.create({
       textAlign: "center",
       marginBottom: 10,
     },
-    card: {
-      padding: 16,
-      backgroundColor: "#fff",
-      borderRadius: 10,
-      elevation: 4,
+    tabContainer: { flexDirection: 'row', justifyContent: 'space-around', backgroundColor: '#fff', padding: 10, marginBottom: 10},
+    tab: { padding: 10, flex: 1, alignItems: 'center' },
+    activeTab: { borderBottomWidth: 3, borderBottomColor: '#1E90FF' },
+    tabText: { fontSize: 16, },
+    activeTabText: { color: '#1E90FF', fontWeight: 'bold' },
+    noCouponText: {
+      textAlign: "center",
+      fontSize: 16,
+      fontWeight: "bold",
+      marginTop: 20,
+      color: "gray",
     },
     tableContainer: {
       backgroundColor: "#FFFFFF",
@@ -184,11 +202,6 @@ const styles = StyleSheet.create({
       padding: 20,
       borderRadius: 10,
       alignItems: "center",
-    },
-    header: {
-      fontSize: 18,
-      fontWeight: "bold",
-      marginBottom: 10,
     },
     closeButton: {
       marginTop: 20,

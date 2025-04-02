@@ -197,7 +197,9 @@ const NoticeScreen = () => {
                             style={{ width: '100%',
                                 height: 50,
                                 paddingHorizontal: 10,
-                                marginVertical: 10, }}
+                                marginVertical: 10, 
+                                backgroundColor:"#f9f9f9",
+                            }}
                         />
                         <TextInput
                             mode="outlined"
@@ -209,7 +211,7 @@ const NoticeScreen = () => {
                             placeholderTextColor="#888"
                             placeholder="Body"
                             multiline
-                            style={{ paddingHorizontal: 10, height: 80 }}
+                            style={{ paddingHorizontal: 10, height: 80,  backgroundColor:"#f9f9f9",}}
                         />
 
                         <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
@@ -242,7 +244,8 @@ const NoticeScreen = () => {
                             style={{ width: '100%',
                                 height: 50,
                                 paddingHorizontal: 10,
-                                marginVertical: 10
+                                marginVertical: 10,
+                                backgroundColor:"#f9f9f9",
                             }}
                         />
                         <TextInput
@@ -255,7 +258,7 @@ const NoticeScreen = () => {
                             placeholderTextColor="#888"
                             placeholder="Body"
                             multiline
-                            style={{paddingHorizontal: 10, height: 80 }}
+                            style={{paddingHorizontal: 10, height: 80,  backgroundColor:"#f9f9f9",}}
                         />
 
                         <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>

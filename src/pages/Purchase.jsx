@@ -10,7 +10,6 @@ import {Razorpay_API_KEY} from "@env";
 
 const Purchase = ({navigation}) => {
   const {user} = useContext(AuthContext);
-  console.log(user);
   const userId = user.userId;
   const [coupon, setCoupon] = useState([]);
   const [menuData, setMenuData] = useState([]);
