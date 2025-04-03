@@ -2,11 +2,13 @@ import React, { useContext } from "react";
 import { View, Text, TouchableOpacity, Alert, StyleSheet, Image } from "react-native";
 import { TextInput } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
+import messaging from '@react-native-firebase/messaging';
 import { AuthContext } from "../../context/AuthContext";
 import AxiosInstance from "../../axios/config";
 import logo from '../../../assets/logo.png';
 import { Formik } from "formik";
 import * as Yup from "yup";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -19,10 +21,12 @@ const Login = () => {
 
   const handleLogin = async (values, actions) => {
     try {
+      const fcmToken = await AsyncStorage.getItem('fcm_token');
+      console.log(fcmToken);
       const response = await AxiosInstance.post("/users/signIn", values);
-
       const { _id, token, name, isAdmin } = response.data;
       const userData = { userId: _id, token, name, email: values.email, isAdmin };
+      await AxiosInstance.post("/users/updateFCMToken", { fcmToken: fcmToken, userId: _id });
       
       login(userData); 
       navigation.navigate('Tabs', { screen: 'Menu' });

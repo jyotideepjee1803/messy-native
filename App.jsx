@@ -1,6 +1,7 @@
+import messaging from '@react-native-firebase/messaging';
 import { NavigationContainer, useNavigation } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import React, { useContext, useState} from 'react'
+import React, { useContext, useEffect, useState} from 'react'
 import MenuPage from './src/pages/Menu';
 import Purchase from './src/pages/Purchase';
 import MyCouponPage from './src/pages/MyCoupon';
@@ -8,13 +9,14 @@ import { AuthContext, AuthProvider } from './src/context/AuthContext';
 import Login from './src/pages/Auth/Login';
 import AdminSettings from './src/pages/Admin/AdminSettings';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Image, Alert } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MealCount from './src/pages/Admin/MealCount';
 import SignUp from './src/pages/Auth/SignUp';
 import ScanCoupon from './src/pages/Admin/ScanCoupon';
 import Profile from './src/pages/Profile';
 import NoticeScreen from './src/pages/Notice';
+import { getFCMToken, requestUserPermission } from './src/utils/notificationService';
 
 
 const Tab = createBottomTabNavigator();
@@ -162,6 +164,19 @@ const AppNavigator = () => {
 };
 
 const App = () => {
+
+  // useEffect(() => {
+  //   const unsubscribe = messaging().onMessage(async remoteMessage => {
+  //     Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+  //   });
+
+  //   return unsubscribe;
+  // }, []);
+
+  useEffect(() => {
+      requestUserPermission();
+  }, []);
+
   return (
     <AuthProvider>
     <NavigationContainer>

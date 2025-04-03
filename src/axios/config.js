@@ -2,7 +2,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
 import {BACKEND_URI, BACKEND_DEV_URI} from "@env";
 
-const backendURI = BACKEND_DEV_URI;
+const backendURI = BACKEND_URI;
 
 const AxiosInstance = axios.create({
   baseURL: backendURI,
