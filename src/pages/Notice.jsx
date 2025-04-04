@@ -113,13 +113,57 @@ const NoticeScreen = () => {
         }
     };
     
+    //Format Time 
+    const formatTimeOrRelative = (timestamp) => {
+        const now = new Date();
+        const date = new Date(timestamp);
+
+        const isSameDay =
+            now.getDate() === date.getDate() &&
+            now.getMonth() === date.getMonth() &&
+            now.getFullYear() === date.getFullYear();
+
+        if (isSameDay) {
+            // Show exact time like 3:45 PM
+            let hours = date.getHours();
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            return `${hours}:${minutes} ${ampm}`;
+        }
+
+        const secondsPast = (now.getTime() - timestamp) / 1000;
+
+        if (secondsPast < 60) {
+            return `${parseInt(secondsPast)}s`;
+        }
+        if (secondsPast < 3600) {
+            return `${parseInt(secondsPast / 60)}m`;
+        }
+        if (secondsPast <= 86400) {
+            return `${parseInt(secondsPast / 3600)}h`;
+        }
+
+        const day = date.getDate();
+        const month = date.toDateString().match(/ [a-zA-Z]*/)[0].replace(" ", "");
+        const year = date.getFullYear() === now.getFullYear() ? "" : " " + date.getFullYear();
+
+        return `${day} ${month}${year}`;
+    };
+
     const renderNotice = ({ item }) => {
         const isExpanded = expandedNotices[item._id];
         const trimmedBody = item.body.length > 100 ? `${item.body.substring(0, 100)}...` : item.body;
 
         return (
             <View style={{ padding: 15, borderBottomWidth: 1, borderColor: "#ddd" }}>
-                <Text style={{ fontSize: 18, fontWeight: "bold" }}>{item.subject}</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 10, justifyContent: "space-between" }}>
+                    <Text style={{ fontSize: 18, fontWeight: "bold" }}>{item.subject}</Text>
+                    <Text style={{ fontSize: 12, color: "gray", marginBottom: 5 }}>
+                        {formatTimeOrRelative(item.createdAt)}
+                    </Text>
+                </View>
+
                 <Text style={{ fontSize: 16, color: "gray" }}>
                     {isExpanded ? item.body : trimmedBody}
                 </Text>

@@ -16,8 +16,9 @@ import SignUp from './src/pages/Auth/SignUp';
 import ScanCoupon from './src/pages/Admin/ScanCoupon';
 import Profile from './src/pages/Profile';
 import NoticeScreen from './src/pages/Notice';
-import { getFCMToken, requestUserPermission } from './src/utils/notificationService';
-
+import { createDefaultChannel, getFCMToken, handleNotifeeNotification, requestUserPermission } from './src/utils/notificationService';
+import notifee, { EventType } from '@notifee/react-native';
+import { navigationRef } from './src/utils/navigationRef';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -165,21 +166,33 @@ const AppNavigator = () => {
 
 const App = () => {
 
-  // useEffect(() => {
-  //   const unsubscribe = messaging().onMessage(async remoteMessage => {
-  //     Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-  //   });
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      const {title, body} = remoteMessage.notification;
+      await notifee.displayNotification({
+        title: title || 'New Notification',
+        body: body || 'You have a new message',
+        android: {
+          channelId: 'default',
+          pressAction: {
+            id: 'default',
+          },
+        },
+      })
+    });
 
-  //   return unsubscribe;
-  // }, []);
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
       requestUserPermission();
+      createDefaultChannel();
+      handleNotifeeNotification();
   }, []);
 
   return (
     <AuthProvider>
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <AppNavigator />
     </NavigationContainer>
     </AuthProvider>

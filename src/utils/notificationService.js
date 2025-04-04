@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
 import {PermissionsAndroid,Platform} from 'react-native';
-import AxiosInstance from '../axios/config';
+import notifee, { AndroidImportance , AndroidVisibility, AndroidBadgeIconType, EventType} from '@notifee/react-native';
+import { navigate } from './navigationRef';
 
 export async function requestUserPermission() {
 
@@ -41,4 +42,32 @@ export const getFCMToken = async() =>{
     } catch (error) {
         console.log("error during generating token",error)
     }
+}
+
+export const createDefaultChannel = async() => {
+    await notifee.createChannel({
+        id: 'default',
+        name: 'Default Channel',
+        importance: AndroidImportance.HIGH,
+        visibility: AndroidVisibility.PUBLIC,
+        sound: 'default',
+        badgeIconType: AndroidBadgeIconType.LARGE,
+        badgeIcon: 'ic_launcher',
+    })
+}
+
+export const handleNotifeeNotification = async() => {
+    notifee.onForegroundEvent(({ type, detail }) => {
+        if (type === EventType.PRESS) {
+            console.log('Notification Pressed', detail.notification);
+            // Handle the notification press event here
+            navigate('Notice');
+        }
+    });
+
+    notifee.onBackgroundEvent(async ({ type, detail }) => {
+        if (type === EventType.PRESS) {
+            navigate('Notice');
+        }
+    });
 }
