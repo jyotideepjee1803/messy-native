@@ -5,6 +5,7 @@ import AxiosInstance from "../axios/config";
 import { AuthContext } from "../context/AuthContext";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { TextInput } from "react-native-paper";
+import Loader from "../components/Loader";
 
 const NoticeScreen = () => {
     const { user } = useContext(AuthContext);
@@ -194,7 +195,7 @@ const NoticeScreen = () => {
         <View style={{ flex: 1, padding: 20, backgroundColor: "#fff" }}>
 
             {loading ? (
-                <ActivityIndicator size="large" color="#007AFF" style={{ flex: 1, justifyContent: "center", alignItems: "center", marginTop: 20 }}/>
+                <Loader/>
             ) : (
                 <FlatList
                     data={notices}

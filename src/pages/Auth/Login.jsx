@@ -9,6 +9,7 @@ import logo from '../../../assets/logo.png';
 import { Formik } from "formik";
 import * as Yup from "yup";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import PasswordInput from "../../components/PasswordInput";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -64,20 +65,9 @@ const Login = () => {
               autoCapitalize="none"
             />
             {touched.email && errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              mode="outlined"
-              label="Password"
-              borderColor="#ccc"
-              activeOutlineColor="#1E90FF"
-              placeholderTextColor="#888"
-              value={values.password}
-              onChangeText={handleChange("password")}
-              onBlur={handleBlur("password")}
-              secureTextEntry
-            />
-            {touched.password && errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+            
+            <PasswordInput name="password" style={styles.input} />
+            
             <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={isSubmitting}>
               <Text style={styles.buttonText}>{isSubmitting ? "Logging in..." : "Login"}</Text>
             </TouchableOpacity>

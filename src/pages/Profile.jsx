@@ -46,7 +46,10 @@ const Profile = () => {
                         <TextInput
                         style={styles.input}
                         label="First Name"
-                        mode='outlined'
+                        mode='flat'
+                        borderColor="#ccc"
+                        activeUnderlineColor="#1E90FF"
+                        placeholderTextColor="#888"
                         placeholder="First Name"
                         value={values.firstName}
                         onChangeText={handleChange("firstName")}
@@ -57,7 +60,10 @@ const Profile = () => {
                         <TextInput
                         style={styles.input}
                         label="Last Name"
-                        mode='outlined'
+                        mode='flat'
+                        borderColor="#ccc"
+                        activeUnderlineColor='#1E90FF'
+                        placeholderTextColor="#888"
                         placeholder="Last Name (Optional)"
                         value={values.lastName}
                         onChangeText={handleChange("lastName")}
@@ -67,7 +73,10 @@ const Profile = () => {
                         <TextInput
                         style={styles.input}
                         label="Email"
-                        mode='outlined'
+                        mode='flat'
+                        borderColor="#ccc"
+                        activeUnderlineColor="#1E90FF"
+                        placeholderTextColor="#888"
                         placeholder="Email"
                         value={user.email}
                         editable={false}
@@ -117,6 +126,7 @@ const Profile = () => {
         width: '100%',
         height: 50,
         paddingHorizontal: 15,
+        paddingVertical: 7,
         marginBottom: 10,
         backgroundColor: '#f9f9f9',
     },

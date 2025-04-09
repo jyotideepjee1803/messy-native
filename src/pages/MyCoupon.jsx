@@ -6,6 +6,7 @@ import { DataTable } from "react-native-paper";
 import { AuthContext } from "../context/AuthContext";
 import Protected from "../common/Protected";
 import { useFocusEffect } from "@react-navigation/native";
+import Loader from "../components/Loader";
 
 const dayOrder = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 
@@ -58,7 +59,7 @@ const MyCouponPage = ({navigation}) => {
     <Protected navigation={navigation}>
       <SafeAreaView style={styles.container}>
         {loading ? (
-          <ActivityIndicator size="large" color="#007AFF" style={styles.loader}/>
+          <Loader/>
         ) : (
           <>
             {/* Tab Switcher */}

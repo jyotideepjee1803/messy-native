@@ -7,6 +7,7 @@ import AxiosInstance from "../axios/config";
 import { AuthContext } from "../context/AuthContext";
 import Protected from "../common/Protected";
 import {Razorpay_API_KEY} from "@env";
+import Loader from "../components/Loader";
 
 const Purchase = ({navigation}) => {
   const {user} = useContext(AuthContext);
@@ -140,10 +141,10 @@ const Purchase = ({navigation}) => {
 
   return (
     <Protected navigation={navigation}>
-      {(!bought || (!coupon || ((coupon.taken===true && getDayDifference(currentDateTime, coupon.updatedAt) >=5) || coupon.taken===false)) ? (
+      {(!bought || (!coupon || coupon.length === 0 || ((coupon.taken===true && getDayDifference(currentDateTime, coupon.updatedAt) >=5) || coupon.taken===false)) ? (
           <ScrollView contentContainerStyle={styles.container}>
               {loadingMenu || loadingCoupon ? (
-                <ActivityIndicator size="large" color="#007AFF" style={styles.loader} />
+                <Loader/>
               ) : (
                 <View style={styles.card}>
                   <Text style={styles.title}>Meal Plan</Text>

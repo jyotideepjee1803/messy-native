@@ -4,6 +4,7 @@ import AxiosInstance from "../../axios/config";
 import { Card, DataTable } from "react-native-paper";
 import Protected from "../../common/Protected";
 import { useFocusEffect } from "@react-navigation/native";
+import Loader from "../../components/Loader";
 
 const MealCount = ({navigation}) => {
 
@@ -38,7 +39,7 @@ const MealCount = ({navigation}) => {
     <Protected navigation={navigation}>
       <ScrollView contentContainerStyle={styles.container}>
         {loading ? (
-          <ActivityIndicator size="large" color="#007AFF" style={styles.loader}/>
+          <Loader/>
         ) : (
           <>
              <View style={styles.tabContainer}>

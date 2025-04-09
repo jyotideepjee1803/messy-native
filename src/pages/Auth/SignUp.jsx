@@ -7,6 +7,7 @@ import AxiosInstance from "../../axios/config";
 import logo from '../../../assets/logo.png';
 import { Formik } from "formik";
 import * as Yup from "yup";
+import PasswordInput from "../../components/PasswordInput";
 
 const SignUpSchema = Yup.object().shape({
   firstName: Yup.string().required("First name is required"),
@@ -102,35 +103,9 @@ const SignUp = () => {
             />
             {touched.email && errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
-            <TextInput
-              style={styles.input}
-              mode="outlined"
-              label="Password"
-              borderColor="#ccc"
-              activeOutlineColor="#1E90FF"
-              placeholderTextColor="#888"
-              placeholder="Password"
-              value={values.password}
-              onChangeText={handleChange("password")}
-              onBlur={handleBlur("password")}
-              secureTextEntry
-            />
-            {touched.password && errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+            <PasswordInput name="password" style={styles.input} />
 
-            <TextInput
-              style={styles.input}
-              mode="outlined"
-              label="Confirm Password"
-              borderColor="#ccc"
-              activeOutlineColor="#1E90FF"
-              placeholderTextColor="#888"
-              placeholder="Confirm Password"
-              value={values.confirmPassword}
-              onChangeText={handleChange("confirmPassword")}
-              onBlur={handleBlur("confirmPassword")}
-              secureTextEntry
-            />
-            {touched.confirmPassword && errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
+            <PasswordInput name="confirmPassword" label="Confirm Password" style={styles.input} />
 
             <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={isSubmitting}>
               <Text style={styles.buttonText}>{isSubmitting ? "Signing Up..." : "Sign Up"}</Text>

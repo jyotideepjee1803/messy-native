@@ -7,6 +7,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { AuthContext } from "../context/AuthContext";
 import AxiosInstance from "../axios/config";
 import Protected from "../common/Protected";
+import Loader from "../components/Loader";
 
 const MEALS_ORDER = ["breakfast", "lunch", "dinner"];
 
@@ -67,7 +68,7 @@ const MenuPage = ({ navigation }) => {
     <Protected navigation={navigation}>
       <ScrollView contentContainerStyle={styles.container}>
         {loadingMeal || loadingMenu ? (
-          <ActivityIndicator size="large" color="#007AFF" style={styles.loader}/>
+          <Loader/>
         ) : (
           <>
             {/* Meal Cards with Scroll Controls */}

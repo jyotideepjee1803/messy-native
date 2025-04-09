@@ -5,6 +5,7 @@ import { AuthContext } from '../../context/AuthContext';
 import AxiosInstance from '../../axios/config';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useFocusEffect } from '@react-navigation/native';
+import Loader from '../../components/Loader';
 
 const DAYS_ORDER = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const MEALS_ORDER = ["breakfast", "lunch", "dinner"];
@@ -72,7 +73,7 @@ const AdminSettings = () => {
     return user.isAdmin ? (
         <View style={styles.container}>
             {loading ? (
-            <ActivityIndicator size="large" color="#007AFF" style={styles.loader}/>
+                <Loader/>
             ) : (
             <>
                 {/* Tab Navigation */}
