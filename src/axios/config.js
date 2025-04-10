@@ -1,8 +1,8 @@
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {BACKEND_URI, BACKEND_DEV_URI} from "@env";
 
-const backendURI = "https://messy-native-server.vercel.app/";
+const backendURI = BACKEND_URI;
 
 const AxiosInstance = axios.create({
   baseURL: backendURI,
