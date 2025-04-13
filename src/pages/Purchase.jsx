@@ -19,6 +19,7 @@ const Purchase = ({navigation}) => {
   const [selectedItems, setSelectedItems] = useState(
     Array(3).fill(Array(7).fill(false))
   );
+  const [refreshKey, setRefreshKey] = useState(0);
   const [mealCost, setMealCost] = useState({ breakfast: 0, lunch: 0, dinner: 0 });
   const [total, setTotal] = useState(0);
   const [bought, setBought] = useState(false);
@@ -109,10 +110,10 @@ const Purchase = ({navigation}) => {
 
   const paymentStatus = async(data)=>{
     const resp = await AxiosInstance.post(`payments?userId=${userId}`, data);
-      if (resp.data) {
-          Alert.alert('Success', 'Coupon Bought Successfully');
-          // setBought(true);
-      } else {
+    if (resp?.data) {
+      // setBought(true);
+      fetchCouponData();
+    }else {
           Alert.alert('Failed', 'Transaction Failed');
       }
   }    
@@ -128,8 +129,9 @@ const Purchase = ({navigation}) => {
         amount: res.data.amount.toString(),
       };
       RazorpayCheckout.open(options).then((data) => {
-        setBought(true);
         paymentStatus(data);
+        // setRefreshKey(prev => prev + 1)
+        // setBought(true);
       }).catch((error) => {
         // handle failure
         alert(`Error: Transaction Failed with code: ${error.code}`);
@@ -141,7 +143,13 @@ const Purchase = ({navigation}) => {
 
   return (
     <Protected navigation={navigation}>
-      {(!bought || (!coupon || coupon.length === 0 || ((coupon.taken===true && getDayDifference(currentDateTime, coupon.updatedAt) >=5) || coupon.taken===false)) ? (
+      {(!bought || 
+        (coupon.length === 0 || 
+          (coupon.length === 1 && (
+            (coupon[0].taken === true && getDayDifference(currentDateTime, coupon[0].weekStartDate) >= 5) ||
+            coupon[0].taken === false
+          ))
+        ) ? (
           <ScrollView contentContainerStyle={styles.container}>
               {loadingMenu || loadingCoupon ? (
                 <Loader/>
