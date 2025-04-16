@@ -32,7 +32,7 @@ const MyCouponPage = ({navigation}) => {
         setMenuData(sortedMenu);
         
         const response = await AxiosInstance.get(`/coupons?userId=${userId}`);
-        setCouponData(response.data.coupons.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))); // Coupons sorted in increasing order of createdAt
+        setCouponData(response.data);
     } catch (error) {
       console.log("Error fetching coupon data", error);
     } finally {
@@ -53,7 +53,7 @@ const MyCouponPage = ({navigation}) => {
     setQrVisible(true);
   };
 
-  const selectedCoupon = couponData[activeTab];
+  const selectedCoupon = activeTab === 0 ? couponData.currentWeek : couponData.nextWeek;
 
   return (
     <Protected navigation={navigation}>

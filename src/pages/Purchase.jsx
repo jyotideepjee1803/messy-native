@@ -66,8 +66,8 @@ const Purchase = ({navigation}) => {
     try{
       setLoadingCoupon(true);
       const response = await AxiosInstance.get(`/coupons?userId=${userId}`);
-      if(response.data.coupons) setBought(true);
-      setCoupon(response.data.coupons);
+      if(response.data?.currentWeek) setBought(true);
+      setCoupon(response.data);
     }catch(error){
       console.error("Error fetching coupon data:", error)
     }
@@ -144,11 +144,11 @@ const Purchase = ({navigation}) => {
   return (
     <Protected navigation={navigation}>
       {(!bought || 
-        (coupon.length === 0 || 
-          (coupon.length === 1 && (
-            (coupon[0].taken === true && getDayDifference(currentDateTime, coupon[0].weekStartDate) >= 5) ||
-            coupon[0].taken === false
-          ))
+        (!coupon?.currentWeek && !coupon?.nextWeek) ||
+          (coupon?.currentWeek && (
+            (coupon?.currentWeek.taken === true && getDayDifference(currentDateTime, coupon.currentWeek.weekStartDate) >= 5) ||
+            coupon?.currentWeek.taken === false
+          )
         ) ? (
           <ScrollView contentContainerStyle={styles.container}>
               {loadingMenu || loadingCoupon ? (
