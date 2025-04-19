@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { View, Text, TouchableOpacity, Alert, StyleSheet, Image } from "react-native";
+import { View, Text, TouchableOpacity, Alert, StyleSheet, Image, ActivityIndicator } from "react-native";
 import { TextInput } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import messaging from '@react-native-firebase/messaging';
@@ -69,7 +69,11 @@ const Login = () => {
             <PasswordInput name="password" style={styles.input} />
             
             <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={isSubmitting}>
-              <Text style={styles.buttonText}>{isSubmitting ? "Logging in..." : "Login"}</Text>
+              {isSubmitting ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Text style={styles.buttonText}>Login</Text>
+              )}
             </TouchableOpacity>
           </>
         )}

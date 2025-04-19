@@ -12,7 +12,7 @@ import Loader from "../components/Loader";
 const Purchase = ({navigation}) => {
   const {user} = useContext(AuthContext);
   const userId = user.userId;
-  const [coupon, setCoupon] = useState([]);
+  const [coupon, setCoupon] = useState();
   const [menuData, setMenuData] = useState([]);
   const [loadingCoupon, setLoadingCoupon] = useState(false);
   const [loadingMenu, setLoadingMenu] = useState(false);
@@ -66,7 +66,6 @@ const Purchase = ({navigation}) => {
     try{
       setLoadingCoupon(true);
       const response = await AxiosInstance.get(`/coupons?userId=${userId}`);
-      if(response.data?.currentWeek) setBought(true);
       setCoupon(response.data);
     }catch(error){
       console.error("Error fetching coupon data:", error)
@@ -129,9 +128,9 @@ const Purchase = ({navigation}) => {
         amount: res.data.amount.toString(),
       };
       RazorpayCheckout.open(options).then((data) => {
+        setBought(true);
         paymentStatus(data);
         // setRefreshKey(prev => prev + 1)
-        // setBought(true);
       }).catch((error) => {
         // handle failure
         alert(`Error: Transaction Failed with code: ${error.code}`);
@@ -141,62 +140,60 @@ const Purchase = ({navigation}) => {
     }
   };
 
+  // console.log(getDayDifference(currentDateTime, coupon?.currentWeek?.weekStartDate) < 5)
   return (
     <Protected navigation={navigation}>
-      {(!bought || 
-        (!coupon?.currentWeek && !coupon?.nextWeek) ||
-          (coupon?.currentWeek && (
-            (coupon?.currentWeek.taken === true && getDayDifference(currentDateTime, coupon.currentWeek.weekStartDate) >= 5) ||
-            coupon?.currentWeek.taken === false
-          )
-        ) ? (
-          <ScrollView contentContainerStyle={styles.container}>
-              {loadingMenu || loadingCoupon ? (
-                <Loader/>
-              ) : (
-                <View style={styles.card}>
-                  <Text style={styles.title}>Meal Plan</Text>
-                  <View style={styles.headerRow}>
-                    <Text style={styles.headerText}>Day</Text>
-                    <Text style={styles.headerText}>Breakfast</Text>
-                    <Text style={styles.headerText}>Lunch</Text>
-                    <Text style={styles.headerText}>Dinner</Text>
-                  </View>
-                  {menuData.map((rowData, index) => (
-                    <View key={index} style={styles.row}>
-                      <Text style={styles.cell}>{rowData.day}</Text>
-                      {["breakfast", "lunch", "dinner"].map((meal, mealIndex) => (
-                        <TouchableOpacity
-                          key={mealIndex}
-                          style={[
-                            styles.mealCell,
-                            selectedItems[mealIndex][index] && styles.selectedMeal,
-                          ]}
-                          onPress={() => handleCheckboxChange(mealIndex, index)}
-                        >
-                          <Text style={styles.cellText}>{rowData[meal]}</Text>
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-                  ))}
-                  <Text style={styles.totalText}>{`Total: ₹${total}`}</Text>
-                  <TouchableHighlight
-                    style={[styles.buyButton, total === 0 && styles.disabledButton]}
-                    disabled={total === 0}
-                    onPress={initiatePayment}
-                  >
-                    <Text style={styles.buyButtonText}>Buy Now</Text>
-                  </TouchableHighlight>
-                </View>
-              )}
-          </ScrollView>
+      {bought || (coupon?.currentWeek && coupon?.nextWeek) || coupon?.nextWeek ||
+        (coupon?.currentWeek && getDayDifference(currentDateTime, coupon.currentWeek.weekStartDate) < 5)
+         ? (
+          <View style={styles.successContainer}>
+            <Ionicons name="checkmark-circle-outline" size={100} color="green" />
+            <Text style={styles.successText}>Coupon already bought!</Text>
+          </View>
+
           ) : (
-            <View style={styles.successContainer}>
-              <Ionicons name="checkmark-circle-outline" size={100} color="green" />
-              <Text style={styles.successText}>Coupon already bought!</Text>
-            </View>
+            <ScrollView contentContainerStyle={styles.container}>
+            {loadingMenu || loadingCoupon ? (
+              <Loader/>
+            ) : (
+              <View style={styles.card}>
+                <Text style={styles.title}>Meal Plan</Text>
+                <View style={styles.headerRow}>
+                  <Text style={styles.headerText}>Day</Text>
+                  <Text style={styles.headerText}>Breakfast</Text>
+                  <Text style={styles.headerText}>Lunch</Text>
+                  <Text style={styles.headerText}>Dinner</Text>
+                </View>
+                {menuData.map((rowData, index) => (
+                  <View key={index} style={styles.row}>
+                    <Text style={styles.cell}>{rowData.day}</Text>
+                    {["breakfast", "lunch", "dinner"].map((meal, mealIndex) => (
+                      <TouchableOpacity
+                        key={mealIndex}
+                        style={[
+                          styles.mealCell,
+                          selectedItems[mealIndex][index] && styles.selectedMeal,
+                        ]}
+                        onPress={() => handleCheckboxChange(mealIndex, index)}
+                      >
+                        <Text style={styles.cellText}>{rowData[meal]}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                ))}
+                <Text style={styles.totalText}>{`Total: ₹${total}`}</Text>
+                <TouchableHighlight
+                  style={[styles.buyButton, total === 0 && styles.disabledButton]}
+                  disabled={total === 0}
+                  onPress={initiatePayment}
+                >
+                  <Text style={styles.buyButtonText}>Buy Now</Text>
+                </TouchableHighlight>
+              </View>
+            )}
+            </ScrollView>
           )
-      )}
+      }
     </Protected>
   );
 };

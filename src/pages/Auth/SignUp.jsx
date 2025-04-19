@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { View, Text, TouchableOpacity, Alert, StyleSheet, Image } from "react-native";
+import { View, Text, TouchableOpacity, Alert, StyleSheet, Image, ActivityIndicator } from "react-native";
 import { TextInput } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../../context/AuthContext";
@@ -108,7 +108,11 @@ const SignUp = () => {
             <PasswordInput name="confirmPassword" label="Confirm Password" style={styles.input} />
 
             <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={isSubmitting}>
-              <Text style={styles.buttonText}>{isSubmitting ? "Signing Up..." : "Sign Up"}</Text>
+              {isSubmitting ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Text style={styles.buttonText}>Login</Text>
+              )}
             </TouchableOpacity>
           </>
         )}

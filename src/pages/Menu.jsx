@@ -147,9 +147,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   mealCard: {
-    width: 200,
+    width: 300,
     marginHorizontal: 10, // Space between cards
-    paddingVertical: 16,
+    paddingVertical: 14,
     paddingHorizontal: 12,
     borderRadius: 12,
     backgroundColor: "#F8F9FA",
@@ -159,14 +159,14 @@ const styles = StyleSheet.create({
     alignItems: "center", 
   },
   mealTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#333",
     marginBottom: 6,
     textAlign: "center",
   },
   mealTime: {
-    fontSize: 14,
+    fontSize: 17,
     color: "#666",
     marginBottom: 6,
     textAlign: "center",

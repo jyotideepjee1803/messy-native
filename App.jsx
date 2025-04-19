@@ -53,7 +53,7 @@ const BottomTabNavigator = () => {
         component={MenuPage} 
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="restaurant-outline" size={size} color={color} />
+            <Ionicons name="restaurant" size={size} color={color} />
           ),
         }} 
       />
@@ -64,7 +64,7 @@ const BottomTabNavigator = () => {
           component={Purchase} 
           options={{
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="cart-outline" size={size} color={color} />
+              <Ionicons name="cart" size={size} color={color} />
             ),
           }} 
         />
@@ -73,7 +73,7 @@ const BottomTabNavigator = () => {
           component={MyCouponPage} 
           options={{
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="pricetag-outline" size={size} color={color} />
+              <Ionicons name="pricetag" size={size} color={color} />
             ),
           }} 
         />
@@ -86,7 +86,7 @@ const BottomTabNavigator = () => {
           component={AdminSettings} 
           options={{
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="settings-outline" size={size} color={color} />
+              <Ionicons name="settings" size={size} color={color} />
             ),
           }} 
         />
@@ -106,7 +106,7 @@ const BottomTabNavigator = () => {
           component={MealCount} 
           options={{
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="bag-outline" size={size} color={color} />
+              <Ionicons name="bag" size={size} color={color} />
             ),
           }} 
         />
@@ -117,7 +117,7 @@ const BottomTabNavigator = () => {
         component={NoticeScreen} 
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="mail-open-outline" size={size} color={color} />
+            <Ionicons name="mail" size={size} color={color} />
           ),
         }} />
     </Tab.Navigator>
