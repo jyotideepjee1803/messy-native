@@ -1,10 +1,13 @@
 import React, { useContext } from 'react'
-import { Formik } from "formik";
-import * as Yup from "yup";
-import { AuthContext } from '../context/AuthContext'
-import Accordion from '../components/Accordion'
+
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
+import Accordion from '../components/Accordion'
+
+import { Formik } from "formik";
+import * as Yup from "yup";
+
+import { AuthContext } from '../context/AuthContext'
 import AxiosInstance from '../axios/config';
 
 const ProfileSchema = Yup.object().shape({

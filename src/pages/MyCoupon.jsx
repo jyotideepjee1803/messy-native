@@ -1,12 +1,14 @@
 import React, { useCallback, useContext, useState } from "react";
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet, TouchableOpacity, Modal, SafeAreaView } from "react-native";
-import QRCode from "react-native-qrcode-svg";
-import AxiosInstance from "../axios/config";
-import { DataTable } from "react-native-paper";
-import { AuthContext } from "../context/AuthContext";
-import Protected from "../common/Protected";
 import { useFocusEffect } from "@react-navigation/native";
+
+import { View, Text, ScrollView, ActivityIndicator, StyleSheet, TouchableOpacity, Modal, SafeAreaView } from "react-native";
+import { DataTable } from "react-native-paper";
+import QRCode from "react-native-qrcode-svg";
+import Protected from "../common/Protected";
 import Loader from "../components/Loader";
+
+import { AuthContext } from "../context/AuthContext";
+import AxiosInstance from "../axios/config";
 
 const dayOrder = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 

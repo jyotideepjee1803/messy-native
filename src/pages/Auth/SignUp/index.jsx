@@ -1,18 +1,21 @@
 import React, { useContext } from "react";
 import { View, Text, TouchableOpacity, Alert, StyleSheet, Image, ActivityIndicator } from "react-native";
 import { TextInput } from "react-native-paper";
-import { useNavigation } from "@react-navigation/native";
-import { AuthContext } from "../../context/AuthContext";
-import AxiosInstance from "../../axios/config";
-import logo from '../../../assets/logo.png';
-import { Formik } from "formik";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import { AuthContext } from "../../../context/AuthContext";
+import AxiosInstance from "../../../axios/config";
+import PasswordInput from "../../../components/PasswordInput";
+import logo from '../../../../assets/logo.png';
+
 import * as Yup from "yup";
-import PasswordInput from "../../components/PasswordInput";
+import { Formik } from "formik";
 
 const SignUpSchema = Yup.object().shape({
   firstName: Yup.string().required("First name is required"),
   lastName: Yup.string(),  // Optional
-  email: Yup.string().email("Invalid email").required("Email is required"),
+//   email: Yup.string().email("Invalid email").required("Email is required"),
   password: Yup.string().min(6, "Password too short").required("Password is required"),
   confirmPassword: Yup.string()
   .oneOf([Yup.ref('password'), null], 'Passwords must match')
@@ -22,22 +25,27 @@ const SignUpSchema = Yup.object().shape({
 const SignUp = () => {
   const navigation = useNavigation();
   const { login } = useContext(AuthContext);
+  const route = useRoute();
+
+  const { email } = route.params || {};
 
   const handleSignUp = async (values, actions) => {
     try {
       const fullName = values.firstName + (values.lastName ? ` ${values.lastName}` : "");
       const userPayload = {
         name: fullName,
-        email: values.email,
+        email: email,
         password: values.password,
         isAdmin: false,
       };
+      console.log(userPayload);
+      const fcmToken = await AsyncStorage.getItem('fcm_token');
 
       const response = await AxiosInstance.post("/users/signUp", userPayload);
 
       const { _id, token, name, isAdmin } = response.data;
-      const userData = { userId: _id, token, name, email: values.email, isAdmin };
-      
+      const userData = { userId: _id, token, name, email: email, isAdmin };
+      await AxiosInstance.post("/users/updateFCMToken", { fcmToken: fcmToken, userId: _id});
       login(userData);
       navigation.navigate('Tabs', { screen: 'Menu' });
     } catch (error) {
@@ -95,13 +103,14 @@ const SignUp = () => {
               activeOutlineColor="#1E90FF"
               placeholderTextColor="#888"
               placeholder="Email"
-              value={values.email}
+              value={email}
               onChangeText={handleChange("email")}
               onBlur={handleBlur("email")}
               keyboardType="email-address"
               autoCapitalize="none"
+              editable={false}
             />
-            {touched.email && errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+            {/* {touched.email && errors.email && <Text style={styles.errorText}>{errors.email}</Text>} */}
 
             <PasswordInput name="password" style={styles.input} />
 
@@ -111,15 +120,12 @@ const SignUp = () => {
               {isSubmitting ? (
                 <ActivityIndicator size="small" color="#fff" />
               ) : (
-                <Text style={styles.buttonText}>Login</Text>
+                <Text style={styles.buttonText}>Sign Up</Text>
               )}
             </TouchableOpacity>
           </>
         )}
       </Formik>
-      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-        <Text style={styles.signupText}>Already have an account? <Text style={styles.signupLink}>Sign in</Text></Text>
-      </TouchableOpacity>
     </View>
   );
 };

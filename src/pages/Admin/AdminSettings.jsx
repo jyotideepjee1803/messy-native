@@ -1,11 +1,13 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { Button, ScrollView, StyleSheet, View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+
 import { TextInput } from 'react-native-paper';
+import { Button, ScrollView, StyleSheet, View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import Loader from '../../components/Loader';
+
 import { AuthContext } from '../../context/AuthContext';
 import AxiosInstance from '../../axios/config';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { useFocusEffect } from '@react-navigation/native';
-import Loader from '../../components/Loader';
 
 const DAYS_ORDER = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const MEALS_ORDER = ["breakfast", "lunch", "dinner"];

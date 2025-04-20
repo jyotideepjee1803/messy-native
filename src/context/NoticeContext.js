@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
 import { Alert } from "react-native";
 import AxiosInstance from "../axios/config";
 

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
-import { AuthContext } from "../context/AuthContext";
 import { ActivityIndicator, View } from "react-native";
+import { AuthContext } from "../context/AuthContext";
 
 const Protected = ({ navigation, children }) => {
   const { user, loading } = useContext(AuthContext);

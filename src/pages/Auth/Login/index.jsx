@@ -2,14 +2,14 @@ import React, { useContext } from "react";
 import { View, Text, TouchableOpacity, Alert, StyleSheet, Image, ActivityIndicator } from "react-native";
 import { TextInput } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-import messaging from '@react-native-firebase/messaging';
-import { AuthContext } from "../../context/AuthContext";
-import AxiosInstance from "../../axios/config";
-import logo from '../../../assets/logo.png';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import PasswordInput from "../../../components/PasswordInput";
+import AxiosInstance from "../../../axios/config";
+import logo from '../../../../assets/logo.png';
+
 import { Formik } from "formik";
 import * as Yup from "yup";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import PasswordInput from "../../components/PasswordInput";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -82,7 +82,7 @@ const Login = () => {
           </>
         )}
       </Formik>
-      <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
+      <TouchableOpacity onPress={() => navigation.navigate("SendOTP")}>
         <Text style={styles.signupText}>Don't have an account? <Text style={styles.signupLink}>Sign up</Text></Text>
       </TouchableOpacity>
     </View>

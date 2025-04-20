@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState, useRef, useCallback } from "react";
-import { 
-  View, Text, ScrollView, ActivityIndicator, StyleSheet, TouchableOpacity 
-} from "react-native";
-import { Card, DataTable } from "react-native-paper";
 import { useFocusEffect } from "@react-navigation/native";
-import { AuthContext } from "../context/AuthContext";
-import AxiosInstance from "../axios/config";
+
+import { View, Text, ScrollView, ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";
+import { Card, DataTable } from "react-native-paper";
 import Protected from "../common/Protected";
 import Loader from "../components/Loader";
+
+import { AuthContext } from "../context/AuthContext";
+import AxiosInstance from "../axios/config";
 
 const MEALS_ORDER = ["breakfast", "lunch", "dinner"];
 

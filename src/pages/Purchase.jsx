@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useMemo, useCallback, useContext } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView, TouchableHighlight, StyleSheet } from "react-native";
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useFocusEffect } from "@react-navigation/native";
-import RazorpayCheckout from "react-native-razorpay";
-import AxiosInstance from "../axios/config";
-import { AuthContext } from "../context/AuthContext";
+
+import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView, TouchableHighlight, StyleSheet } from "react-native";
 import Protected from "../common/Protected";
-import {Razorpay_API_KEY} from "@env";
 import Loader from "../components/Loader";
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import RazorpayCheckout from "react-native-razorpay";
+
+import {Razorpay_API_KEY} from "@env";
+
+import { AuthContext } from "../context/AuthContext";
+import AxiosInstance from "../axios/config";
 
 const Purchase = ({navigation}) => {
   const {user} = useContext(AuthContext);

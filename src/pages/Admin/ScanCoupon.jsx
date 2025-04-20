@@ -1,9 +1,11 @@
 import React, { useCallback, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
-import { Camera } from "react-native-camera-kit";
-import AxiosInstance from "../../axios/config";
 import { useFocusEffect } from "@react-navigation/native";
+
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
 import { Dialog, Portal, Button, Provider } from "react-native-paper";
+import { Camera } from "react-native-camera-kit";
+
+import AxiosInstance from "../../axios/config";
 
 const { width } = Dimensions.get("window");
 
