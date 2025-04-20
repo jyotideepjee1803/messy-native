@@ -18,19 +18,23 @@ const LoginSchema = Yup.object().shape({
 
 const Login = () => {
   const navigation = useNavigation();
-  const { login } = useContext(AuthContext);
-
+  
   const handleLogin = async (values, actions) => {
     try {
       const fcmToken = await AsyncStorage.getItem('fcm_token');
       console.log(fcmToken);
       const response = await AxiosInstance.post("/users/signIn", values);
-      const { _id, token, name, isAdmin } = response.data;
-      const userData = { userId: _id, token, name, email: values.email, isAdmin };
-      await AxiosInstance.post("/users/updateFCMToken", { fcmToken: fcmToken, userId: _id });
+      const { userId } = response.data;
+      // const userData = { userId: _id, token, name, email: values.email, isAdmin };
+      // await AxiosInstance.post("/users/updateFCMToken", { fcmToken: fcmToken, userId: userId });
       
-      login(userData); 
-      navigation.navigate('Tabs', { screen: 'Menu' });
+      // login(userData); 
+      // navigation.navigate('Tabs', { screen: 'Menu' });
+      navigation.navigate('OtpVerification', {
+        userId: userId,
+        email: values.email,
+        fcmToken: fcmToken,
+      });
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);
       Alert.alert("Login Failed", error.response?.data?.message || "Invalid email or password.");

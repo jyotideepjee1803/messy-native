@@ -19,6 +19,7 @@ import NoticeScreen from './src/pages/Notice';
 import { createDefaultChannel, getFCMToken, handleNotifeeNotification, requestUserPermission } from './src/utils/notificationService';
 import notifee, { EventType } from '@notifee/react-native';
 import { navigationRef } from './src/utils/navigationRef';
+import OtpVerification from './src/pages/Auth/OTP';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -158,6 +159,7 @@ const AppNavigator = () => {
         <>
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Signup" component={SignUp} />
+          <Stack.Screen name="OtpVerification" component={OtpVerification}/>
         </>
       )}
     </Stack.Navigator>
