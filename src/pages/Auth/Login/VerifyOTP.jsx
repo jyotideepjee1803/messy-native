@@ -2,8 +2,8 @@ import React, { useContext, useRef, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
-import AxiosInstance from '../../../axios/config';
-import { AuthContext } from '../../../context/AuthContext';
+import AxiosInstance from '@/axios/config';
+import { AuthContext } from '@/context/AuthContext';
 
 const OTP_LENGTH = 6;
 

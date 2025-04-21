@@ -2,7 +2,7 @@ import React, { useContext, useRef, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
-import AxiosInstance from '../../../axios/config';
+import AxiosInstance from '@/axios/config';
 
 const OTP_LENGTH = 6;
 

@@ -4,10 +4,10 @@ import { useFocusEffect } from "@react-navigation/native";
 import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert, Modal } from "react-native";
 import { TextInput } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import Loader from "../components/Loader";
+import Loader from "@/components/Loader";
 
-import { AuthContext } from "../context/AuthContext";
-import AxiosInstance from "../axios/config";
+import { AuthContext } from "@/context/AuthContext";
+import AxiosInstance from "@/axios/config";
 
 const NoticeScreen = () => {
     const { user } = useContext(AuthContext);

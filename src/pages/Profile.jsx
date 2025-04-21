@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
-import Accordion from '../components/Accordion'
+import Accordion from '@/components/Accordion'
 
 import { Formik } from "formik";
 import * as Yup from "yup";

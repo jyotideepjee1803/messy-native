@@ -4,10 +4,10 @@ import { TextInput } from "react-native-paper";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { AuthContext } from "../../../context/AuthContext";
-import AxiosInstance from "../../../axios/config";
-import PasswordInput from "../../../components/PasswordInput";
-import logo from '../../../../assets/logo.png';
+import { AuthContext } from "@/context/AuthContext";
+import AxiosInstance from "@/axios/config";
+import PasswordInput from "@/components/PasswordInput";
+import logo from '@/assets/logo.png';
 
 import * as Yup from "yup";
 import { Formik } from "formik";

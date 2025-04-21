@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo, useCallback, useContext } from "re
 import { useFocusEffect } from "@react-navigation/native";
 
 import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView, TouchableHighlight, StyleSheet } from "react-native";
-import Protected from "../common/Protected";
-import Loader from "../components/Loader";
+import Protected from "@/common/Protected";
+import Loader from "@/components/Loader";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import RazorpayCheckout from "react-native-razorpay";
 

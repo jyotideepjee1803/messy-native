@@ -4,10 +4,10 @@ import { useFocusEffect } from '@react-navigation/native';
 import { TextInput } from 'react-native-paper';
 import { Button, ScrollView, StyleSheet, View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import Loader from '../../components/Loader';
+import Loader from '@/components/Loader';
 
-import { AuthContext } from '../../context/AuthContext';
-import AxiosInstance from '../../axios/config';
+import { AuthContext } from '@/context/AuthContext';
+import AxiosInstance from '@/axios/config';
 
 const DAYS_ORDER = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const MEALS_ORDER = ["breakfast", "lunch", "dinner"];

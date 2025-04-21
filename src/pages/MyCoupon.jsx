@@ -4,8 +4,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import { View, Text, ScrollView, ActivityIndicator, StyleSheet, TouchableOpacity, Modal, SafeAreaView } from "react-native";
 import { DataTable } from "react-native-paper";
 import QRCode from "react-native-qrcode-svg";
-import Protected from "../common/Protected";
-import Loader from "../components/Loader";
+import Protected from "@/common/Protected";
+import Loader from "@/components/Loader";
 
 import { AuthContext } from "../context/AuthContext";
 import AxiosInstance from "../axios/config";

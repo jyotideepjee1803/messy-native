@@ -4,9 +4,9 @@ import { TextInput } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import PasswordInput from "../../../components/PasswordInput";
-import AxiosInstance from "../../../axios/config";
-import logo from '../../../../assets/logo.png';
+import PasswordInput from "@/components/PasswordInput";
+import AxiosInstance from "@/axios/config";
+import logo from '@/assets/logo.png';
 
 import { Formik } from "formik";
 import * as Yup from "yup";

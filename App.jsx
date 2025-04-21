@@ -4,9 +4,9 @@ import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Image, Ale
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 //Context and UTILS
-import { navigationRef } from './src/utils/navigationRef';
-import { AuthContext, AuthProvider } from './src/context/AuthContext';
-import { createDefaultChannel, getFCMToken, handleNotifeeNotification, requestUserPermission } from './src/utils/notificationService';
+import { navigationRef } from '@/utils/navigationRef';
+import { AuthContext, AuthProvider } from '@/context/AuthContext';
+import { createDefaultChannel, getFCMToken, handleNotifeeNotification, requestUserPermission } from '@/utils/notificationService';
 import notifee, { EventType } from '@notifee/react-native';
 
 //React navigation
@@ -18,23 +18,23 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import messaging from '@react-native-firebase/messaging';
 
 //Common Pages
-import MenuPage from './src/pages/Menu';
-import Purchase from './src/pages/Purchase';
-import MyCouponPage from './src/pages/MyCoupon';
-import Profile from './src/pages/Profile';
-import NoticeScreen from './src/pages/Notice';
+import MenuPage from '@/pages/Menu';
+import Purchase from '@/pages/Purchase';
+import MyCouponPage from '@/pages/MyCoupon';
+import Profile from '@/pages/Profile';
+import NoticeScreen from '@/pages/Notice';
 
 //Auth Pages
-import OtpVerification from './src/pages/Auth/Login/VerifyOTP';
-import Login from './src/pages/Auth/Login';
-import SendOTP from './src/pages/Auth/SignUp/SendOTP';
-import EmailVerification from './src/pages/Auth/SignUp/VerifyOTP';
-import SignUp from './src/pages/Auth/SignUp';
+import OtpVerification from '@/pages/Auth/Login/VerifyOTP';
+import Login from '@/pages/Auth/Login';
+import SendOTP from '@/pages/Auth/SignUp/SendOTP';
+import EmailVerification from '@/pages/Auth/SignUp/VerifyOTP';
+import SignUp from '@/pages/Auth/SignUp';
 
 //Admin Pages
-import MealCount from './src/pages/Admin/MealCount';
-import AdminSettings from './src/pages/Admin/AdminSettings';
-import ScanCoupon from './src/pages/Admin/ScanCoupon';
+import MealCount from '@/pages/Admin/MealCount';
+import AdminSettings from '@/pages/Admin/AdminSettings';
+import ScanCoupon from '@/pages/Admin/ScanCoupon';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();

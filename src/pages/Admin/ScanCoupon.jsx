@@ -5,7 +5,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from "react-nati
 import { Dialog, Portal, Button, Provider } from "react-native-paper";
 import { Camera } from "react-native-camera-kit";
 
-import AxiosInstance from "../../axios/config";
+import AxiosInstance from "@/axios/config";
 
 const { width } = Dimensions.get("window");
 
