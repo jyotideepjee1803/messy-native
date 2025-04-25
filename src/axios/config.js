@@ -2,7 +2,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {BACKEND_URI, BACKEND_DEV_URI, OTP_BACKEND_URI} from "@env";
 
-const backendURI = "https://messy-native-server.onrender.com/";
+const backendURI = OTP_BACKEND_URI;
 
 const AxiosInstance = axios.create({
   baseURL: backendURI,

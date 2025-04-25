@@ -27,7 +27,7 @@ const Loader = () => {
     <View style={styles.container}>
       <Animated.View style={{ transform: [{ scale }] }}>
         <Image
-          source={require('../../assets/logo.png')}
+          source={require('@/assets/logo.png')}
           style={styles.icon}
           resizeMode="contain"
         />

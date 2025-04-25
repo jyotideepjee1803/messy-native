@@ -83,7 +83,7 @@ const BottomTabNavigator = () => {
             ),
           }} 
         />
-        <Tab.Screen 
+        <Tab.Screen
           name="Coupons" 
           component={MyCouponPage} 
           options={{
@@ -145,7 +145,7 @@ const AppNavigator = () => {
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-         <Image source={require('./assets/logo.png')} style={{width: 150, height: 150, resizeMode: 'contain'}} />
+         <Image source={require('@/assets/logo.png')} style={{width: 150, height: 150, resizeMode: 'contain'}} />
       </View>
     );
   }

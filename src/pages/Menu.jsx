@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useRef, useCallback } from "react";
+import React, { useContext, useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 
 import { View, Text, ScrollView, ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";
@@ -17,15 +17,15 @@ const MenuPage = ({ navigation }) => {
   const [mealData, setMealData] = useState([]);
   const [loadingMenu, setLoadingMenu] = useState(false);
   const [loadingMeal, setLoadingMeal] = useState(false);
-  
-  const [page, setPage] = useState(0);
-  const itemsPerPage = 7;
+  const sortIdx = useMemo(() => ({ Monday: 0, Tuesday: 1, Wednesday: 2, Thursday: 3, Friday: 4, Saturday: 5, Sunday: 6 }), []);
 
   const fetchMenuData = async () => {
     setLoadingMenu(true);
     try {
       const response = await AxiosInstance.get("/days/getMenu");
-      setMenuData(response.data);
+      let data = response.data;
+      data.sort((a, b) => sortIdx[a.day] - sortIdx[b.day]);
+      setMenuData(data);
     } catch (error) {
       console.log("Error fetching menu data", error);
     } finally {
@@ -57,12 +57,6 @@ const MenuPage = ({ navigation }) => {
         fetchData();
       }, [])
   );
-
-  const paginatedMenuData = menuData.slice(
-    page * itemsPerPage,
-    (page + 1) * itemsPerPage
-  );
-
 
   return (
     <Protected navigation={navigation}>
@@ -103,8 +97,8 @@ const MenuPage = ({ navigation }) => {
                 <DataTable.Title>Dinner</DataTable.Title>
               </DataTable.Header>
 
-              {paginatedMenuData.length > 0 ? (
-                paginatedMenuData.map((item, index) => (
+              {menuData.length > 0 ? (
+                menuData.map((item, index) => (
                   <DataTable.Row key={index}>
                     <DataTable.Cell>{item.day}</DataTable.Cell>
                     <DataTable.Cell>{item.breakfast}</DataTable.Cell>
