@@ -9,6 +9,7 @@ import Loader from "@/components/Loader";
 
 import { AuthContext } from "../context/AuthContext";
 import AxiosInstance from "../axios/config";
+import { encrypt } from "@/utils/encrypt";
 
 const dayOrder = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 
@@ -48,14 +49,16 @@ const MyCouponPage = ({navigation}) => {
     }, [])
   );
 
+  const selectedCoupon = activeTab === 0 ? couponData.currentWeek : couponData.nextWeek;
+
   const handleShowQR = (dayIndex, mealType) => {
-    const qrData = JSON.stringify({ userId, dayIndex, mealType});
-    console.log(qrData);
-    setSelectedMeal(qrData);
+    const couponId = activeTab === 0 ? couponData?.currentWeek?._id : couponData?.nextWeek?._id
+    const qrData = {  couponId, dayIndex, mealType};
+    const encyrptedData = encrypt(qrData);
+
+    setSelectedMeal(encyrptedData);
     setQrVisible(true);
   };
-
-  const selectedCoupon = activeTab === 0 ? couponData.currentWeek : couponData.nextWeek;
 
   return (
     <Protected navigation={navigation}>

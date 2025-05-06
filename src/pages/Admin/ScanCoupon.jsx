@@ -25,13 +25,12 @@ const ScanCoupon = ({ navigation }) => {
 
   const handleScan = async (qrData) => {
     if (alertShown) return;
-
     try {
       setAlertShown(true);
-      const parsedData = JSON.parse(qrData);
-      const response = await AxiosInstance.post("/coupons/scan", parsedData);
+      const response = await AxiosInstance.post("/coupons/scan", { encryptedData: qrData });
       setDialogMessage(response.data.message);
     } catch (error) {
+      console.log(error);
       setDialogMessage(error.response?.data?.message || "An error occurred");
     } finally {
       setDialogVisible(true);

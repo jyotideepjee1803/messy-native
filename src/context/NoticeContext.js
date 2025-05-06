@@ -16,7 +16,6 @@ export const NoticeProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await AxiosInstance.get(`/notices`);
-      console.log(response);
       setNotices(response.data || []);
     } catch (error) {
       console.error("Error fetching notices", error);
