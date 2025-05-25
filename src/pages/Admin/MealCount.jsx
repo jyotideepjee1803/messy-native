@@ -20,7 +20,6 @@ const MealCount = ({navigation}) => {
     setLoading(true);
     try {
         const response = await AxiosInstance.get(`/coupons/totalMeal`);
-        console.log(response.data);
         setMealCountData(response.data);
     } catch (error) {
       console.log("Error fetching coupon data", error);

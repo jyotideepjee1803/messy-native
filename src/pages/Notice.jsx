@@ -181,7 +181,24 @@ const NoticeScreen = () => {
 
                 {isAdmin && (
                     <View style={{ flexDirection: "row", marginTop: 10 }}>
-                        <TouchableOpacity onPress={() => deleteNotice(item._id)} style={{ marginRight: 15 }}>
+                        <TouchableOpacity onPress={() => {
+                            Alert.alert(
+                            'Delete Notice',
+                            'Are you sure you want to delete this notice?',
+                            [
+                                {
+                                text: 'Cancel',
+                                style: 'cancel',
+                                },
+                                {
+                                text: 'Delete',
+                                onPress: () => deleteNotice(item._id),
+                                style: 'destructive',
+                                },
+                            ],
+                            { cancelable: true }
+                            );
+                        }} style={{ marginRight: 15 }}>
                             <Icon name="delete" size={22} color="red" />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => openEditModal(item)}>
